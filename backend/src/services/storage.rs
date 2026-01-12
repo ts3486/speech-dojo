@@ -1,5 +1,5 @@
 use anyhow::Context;
-use aws_config::Region;
+use aws_config::{BehaviorVersion, Region};
 use aws_sdk_s3::config::Builder as S3ConfigBuilder;
 use aws_sdk_s3::primitives::ByteStream;
 use aws_sdk_s3::Client;
@@ -18,7 +18,7 @@ impl StorageService {
         let endpoint = env::var("S3_ENDPOINT").unwrap_or_else(|_| "http://localhost:9000".into());
         let region = env::var("AWS_REGION").unwrap_or_else(|_| "us-east-1".into());
 
-        let shared_config = aws_config::from_env()
+        let shared_config = aws_config::defaults(BehaviorVersion::latest())
             .region(Region::new(region.clone()))
             .endpoint_url(endpoint.clone())
             .load()

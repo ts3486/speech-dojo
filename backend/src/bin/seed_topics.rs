@@ -19,7 +19,8 @@ async fn main() -> anyhow::Result<()> {
 
     sqlx::migrate!("./migrations").run(&pool).await?;
 
-    let fixture_path = std::env::var("TOPICS_FIXTURE").unwrap_or_else(|_| "backend/fixtures/topics.json".into());
+    let default_fixture = concat!(env!("CARGO_MANIFEST_DIR"), "/fixtures/topics.json");
+    let fixture_path = std::env::var("TOPICS_FIXTURE").unwrap_or_else(|_| default_fixture.into());
     let data = fs::read_to_string(&fixture_path)
         .map_err(|e| anyhow::anyhow!("failed to read fixture {}: {}", fixture_path, e))?;
     let topics: Vec<NewTopic> = serde_json::from_str(&data)?;
