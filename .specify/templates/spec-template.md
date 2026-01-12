@@ -5,6 +5,8 @@
 **Status**: Draft  
 **Input**: User description: "$ARGUMENTS"
 
+**Constitution Hooks**: Honor security/privacy (no browser secrets; default private sessions; delete/export), realtime WebRTC experience, reliability of audio/transcript persistence, clear frontend/backend boundaries, MVP scope discipline, required testing (Vitest + backend unit/integration), and PII-safe observability.
+
 ## User Scenarios & Testing *(mandatory)*
 
 <!--
@@ -67,13 +69,12 @@
 
 ### Edge Cases
 
-<!--
-  ACTION REQUIRED: The content in this section represents placeholders.
-  Fill them out with the right edge cases.
--->
-
-- What happens when [boundary condition]?
-- How does system handle [error scenario]?
+- Mic permissions are denied or revoked mid-session.
+- Network drops or WebRTC renegotiation fails during a session (session still saves cleanly).
+- Client secret/token expires while a call is active.
+- Rating worker or post-processing fails but audio/transcript must persist.
+- User requests delete/export while processing is in flight.
+- Publishing flow without explicit opt-in (must be prevented or re-confirmed).
 
 ## Requirements *(mandatory)*
 
@@ -84,21 +85,23 @@
 
 ### Functional Requirements
 
-- **FR-001**: System MUST [specific capability, e.g., "allow users to create accounts"]
-- **FR-002**: System MUST [specific capability, e.g., "validate email addresses"]  
-- **FR-003**: Users MUST be able to [key interaction, e.g., "reset their password"]
-- **FR-004**: System MUST [data requirement, e.g., "persist user preferences"]
-- **FR-005**: System MUST [behavior, e.g., "log all security events"]
-
-*Example of marking unclear requirements:*
-
-- **FR-006**: System MUST authenticate users via [NEEDS CLARIFICATION: auth method not specified - email/password, SSO, OAuth?]
-- **FR-007**: System MUST retain user data for [NEEDS CLARIFICATION: retention period not specified]
+- **FR-001**: System MUST mint short-lived client secrets via the backend for browser WebRTC sessions.
+- **FR-002**: System MUST allow topic-driven voice session start/stop with transcript capture.
+- **FR-003**: System MUST persist audio recordings and transcripts even if rating/post-processing fails.
+- **FR-004**: System MUST default sessions to private and require explicit opt-in for publishing.
+- **FR-005**: Users MUST be able to delete or export their session data.
+- **FR-006**: System MUST handle mic permission denial, token expiration, and network drops with actionable user feedback.
+- **FR-007**: System MUST authenticate users via [NEEDS CLARIFICATION: method e.g., email/password, SSO, OAuth?]
+- **FR-008**: System MUST log session lifecycle events without storing sensitive content.
 
 ### Key Entities *(include if feature involves data)*
 
-- **[Entity 1]**: [What it represents, key attributes without implementation]
-- **[Entity 2]**: [What it represents, relationships to other entities]
+- **Session**: Topic, participant, start/end times, client secret used, status, retention flags.
+- **Transcript**: Segments with timestamps, finalization status, linked to session and audio.
+- **AudioRecording**: Storage location/format, duration, linked session reference.
+- **Topic**: Title/prompts, difficulty metadata, optional coaching hints.
+- **Rating**: Optional scoring/feedback for a session, linked to session and transcript.
+- **ClientSecret**: Short-lived token minted by backend, expiry, associated permissions.
 
 ## Success Criteria *(mandatory)*
 
@@ -109,7 +112,8 @@
 
 ### Measurable Outcomes
 
-- **SC-001**: [Measurable metric, e.g., "Users can complete account creation in under 2 minutes"]
-- **SC-002**: [Measurable metric, e.g., "System handles 1000 concurrent users without degradation"]
-- **SC-003**: [User satisfaction metric, e.g., "90% of users successfully complete primary task on first attempt"]
-- **SC-004**: [Business metric, e.g., "Reduce support tickets related to [X] by 50%"]
+- **SC-001**: Users can start a voice session and receive first AI response within [X] seconds (P95).
+- **SC-002**: 100% of sessions persist audio and transcripts even when rating/post-processing fails.
+- **SC-003**: 95% of sessions recover without manual intervention after transient network interruptions.
+- **SC-004**: 0 instances of OpenAI API keys present in frontend bundles or logs (static checks).
+- **SC-005**: [Business metric, e.g., "Y% of learners complete N sessions/week with positive rating"]

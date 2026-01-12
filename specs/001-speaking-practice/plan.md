@@ -1,13 +1,13 @@
-# Implementation Plan: [FEATURE]
+# Implementation Plan: Realtime Speaking Practice
 
-**Branch**: `[###-feature-name]` | **Date**: [DATE] | **Spec**: [link]
-**Input**: Feature specification from `/specs/[###-feature-name]/spec.md`
+**Branch**: `001-speaking-practice` | **Date**: 2026-01-11 | **Spec**: specs/001-speaking-practice/spec.md
+**Input**: Feature specification from `/specs/001-speaking-practice/spec.md`
 
 **Note**: This template is filled in by the `/speckit.plan` command and should stay aligned with the constitution.
 
 ## Summary
 
-[Extract from feature spec: primary requirement + technical approach from research]
+Deliver a browser-based speaking coach where users pick a predefined topic, run a realtime WebRTC voice session with an AI coach, and save audio, transcript, and metadata privately. Frontend (React + Tailwind) manages mic permissions, WebRTC to OpenAI Realtime via backend-minted client secrets, shows live status, and uploads the recording on end. Backend (Rust/Axum + Postgres + S3-compatible storage) provides topics, issues client secrets, stores session/transcript/audio metadata, and serves history and playback.
 
 ## Technical Context
 
@@ -17,15 +17,15 @@
   the iteration process.
 -->
 
-**Language/Version**: [e.g., Python 3.11, Swift 5.9, Rust 1.75 or NEEDS CLARIFICATION]  
-**Primary Dependencies**: [e.g., FastAPI, UIKit, LLVM or NEEDS CLARIFICATION]  
-**Storage**: [if applicable, e.g., PostgreSQL, CoreData, files or N/A]  
-**Testing**: [e.g., pytest, XCTest, cargo test or NEEDS CLARIFICATION]  
-**Target Platform**: [e.g., Linux server, iOS 15+, WASM or NEEDS CLARIFICATION]
-**Project Type**: [single/web/mobile - determines source structure]  
-**Performance Goals**: [domain-specific, e.g., 1000 req/s, 10k lines/sec, 60 fps or NEEDS CLARIFICATION]  
-**Constraints**: [domain-specific, e.g., <200ms p95, <100MB memory, offline-capable or NEEDS CLARIFICATION]  
-**Scale/Scope**: [domain-specific, e.g., 10k users, 1M LOC, 50 screens or NEEDS CLARIFICATION]
+**Language/Version**: Frontend TypeScript (React), Backend Rust (Axum, Tokio), Postgres 15+  
+**Primary Dependencies**: React, Tailwind CSS, WebRTC, OpenAI Realtime (gpt-realtime-mini), Axum, SQLx (or equivalent), S3-compatible SDK  
+**Storage**: PostgreSQL for topics/sessions/transcripts; S3-compatible object storage for audio (local dev bucket ok)  
+**Testing**: Frontend Vitest; backend unit + integration tests (Rust)  
+**Target Platform**: Modern browsers (Chrome/Safari) for users; Linux server runtime for backend  
+**Project Type**: Web (frontend + backend monorepo)  
+**Performance Goals**: First AI response ≤3s P95 after start; audio replay loads ≤3s P95; maintain realtime feel during 2–5 minute sessions  
+**Constraints**: No OpenAI API keys in frontend; short-lived client secrets only; sessions private by default; must handle mic denial, token expiry, and network drops without data loss  
+**Scale/Scope**: MVP scope: single-user coaching sessions with history/replay; social/payments/advanced ratings explicitly out-of-scope
 
 ## Constitution Check
 
@@ -38,6 +38,8 @@
 - Product Scope Discipline: Feature fits MVP path (topic → voice session → transcript → history); social/payments/advanced analytics called out as out-of-scope unless explicitly approved.
 - Testing & Quality: Vitest coverage for core UI + session state; backend unit tests for services and integration tests for key APIs; user-facing error states covered.
 - Observability & Maintainability: Session lifecycle logging without sensitive content; errors are actionable and traceable; code favors clarity over cleverness.
+
+**Gate Status**: PASS (plan aligns with all principles; no exceptions requested).
 
 ## Project Structure
 
@@ -54,32 +56,14 @@ specs/[###-feature]/
 ```
 
 ### Source Code (repository root)
-<!--
-  ACTION REQUIRED: Replace the placeholder tree below with the concrete layout
-  for this feature. Delete unused options and expand the chosen structure with
-  real paths (e.g., apps/admin, packages/something). The delivered plan must
-  not include Option labels.
--->
 
 ```text
-# [REMOVE IF UNUSED] Option 1: Single project (DEFAULT)
-src/
-├── models/
-├── services/
-├── cli/
-└── lib/
-
-tests/
-├── contract/
-├── integration/
-└── unit/
-
-# [REMOVE IF UNUSED] Option 2: Web application (when "frontend" + "backend" detected)
 backend/
 ├── src/
+│   ├── api/
 │   ├── models/
 │   ├── services/
-│   └── api/
+│   └── workers/ (if needed for rating/async tasks)
 └── tests/
 
 frontend/
@@ -89,16 +73,18 @@ frontend/
 │   └── services/
 └── tests/
 
-# [REMOVE IF UNUSED] Option 3: Mobile + API (when "iOS/Android" detected)
-api/
-└── [same as backend above]
-
-ios/ or android/
-└── [platform-specific structure: feature modules, UI flows, platform tests]
+specs/
+├── 001-speaking-practice/
+│   ├── spec.md
+│   ├── plan.md
+│   ├── research.md
+│   ├── data-model.md
+│   ├── quickstart.md
+│   └── contracts/
+└── ...
 ```
 
-**Structure Decision**: [Document the selected structure and reference the real
-directories captured above]
+**Structure Decision**: Web app monorepo with frontend/ and backend/ as above; specs per feature in `specs/###-name/`
 
 ## Complexity Tracking
 

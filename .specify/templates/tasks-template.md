@@ -8,9 +8,11 @@ description: "Task list template for feature implementation"
 **Input**: Design documents from `/specs/[###-feature-name]/`
 **Prerequisites**: plan.md (required), spec.md (required for user stories), research.md, data-model.md, contracts/
 
-**Tests**: The examples below include test tasks. Tests are OPTIONAL - only include them if explicitly requested in the feature specification.
+**Tests**: Tests for core flows are REQUIRED (Vitest on frontend; backend unit + integration). Only omit if the spec explicitly defers and the exception is documented.
 
 **Organization**: Tasks are grouped by user story to enable independent implementation and testing of each story.
+
+**Constitution Hooks**: Include tasks for security/privacy (no frontend secrets; sessions private by default with delete/export), realtime resilience (WebRTC path, token expiry, mic/network failure handling), reliability (persist audio/transcripts even if rating fails), architecture boundaries (frontend owns UI/audio/WebRTC/transcripts/history; backend owns auth/topics/persistence/uploads/rating/OpenAI), observability (PII-safe logging), testing discipline, and MVP scope (topic → voice session → transcript → history unless explicitly expanded).
 
 ## Format: `[ID] [P?] [Story] Description`
 
@@ -20,10 +22,11 @@ description: "Task list template for feature implementation"
 
 ## Path Conventions
 
-- **Single project**: `src/`, `tests/` at repository root
-- **Web app**: `backend/src/`, `frontend/src/`
-- **Mobile**: `api/src/`, `ios/src/` or `android/src/`
-- Paths shown below assume single project - adjust based on plan.md structure
+- Monorepo layout (must match plan.md):
+  - `backend/src/`, `backend/tests/` (Rust Axum API, DB, OpenAI client-secret minting)
+  - `frontend/src/`, `frontend/tests/` (React + Tailwind + Vitest)
+  - `specs/[feature]/` (spec artifacts)
+  - `.specify/` (Spec Kit templates/config)
 
 <!-- 
   ============================================================================
@@ -48,9 +51,10 @@ description: "Task list template for feature implementation"
 
 **Purpose**: Project initialization and basic structure
 
-- [ ] T001 Create project structure per implementation plan
-- [ ] T002 Initialize [language] project with [framework] dependencies
-- [ ] T003 [P] Configure linting and formatting tools
+- [ ] T001 Confirm monorepo structure (frontend/, backend/, specs/, .specify/) matches plan.md
+- [ ] T002 Initialize frontend tooling (React + Tailwind + Vitest) per plan.md
+- [ ] T003 Initialize backend workspace/dependencies (Rust + Axum + test harness)
+- [ ] T004 [P] Configure linting/formatting tools (frontend + backend)
 
 ---
 
@@ -62,12 +66,14 @@ description: "Task list template for feature implementation"
 
 Examples of foundational tasks (adjust based on your project):
 
-- [ ] T004 Setup database schema and migrations framework
-- [ ] T005 [P] Implement authentication/authorization framework
-- [ ] T006 [P] Setup API routing and middleware structure
-- [ ] T007 Create base models/entities that all stories depend on
-- [ ] T008 Configure error handling and logging infrastructure
-- [ ] T009 Setup environment configuration management
+- [ ] T005 Setup database schema and migrations framework
+- [ ] T006 [P] Implement authentication/authorization framework
+- [ ] T007 [P] Setup API routing and middleware structure in backend (Axum)
+- [ ] T008 Create base models/entities that all stories depend on
+- [ ] T009 Configure PII-safe error handling and logging infrastructure
+- [ ] T010 Setup environment configuration management and secrets handling
+- [ ] T011 Implement backend OpenAI client-secret minting (no API keys in frontend)
+- [ ] T012 Establish session persistence for audio/transcripts with idempotent create/finalize paths
 
 **Checkpoint**: Foundation ready - user story implementation can now begin in parallel
 
@@ -79,21 +85,21 @@ Examples of foundational tasks (adjust based on your project):
 
 **Independent Test**: [How to verify this story works on its own]
 
-### Tests for User Story 1 (OPTIONAL - only if tests requested) ⚠️
+### Tests for User Story 1 (core flows REQUIRED)
 
 > **NOTE: Write these tests FIRST, ensure they FAIL before implementation**
 
-- [ ] T010 [P] [US1] Contract test for [endpoint] in tests/contract/test_[name].py
-- [ ] T011 [P] [US1] Integration test for [user journey] in tests/integration/test_[name].py
+- [ ] T013 [P] [US1] Contract test for [endpoint] in backend/tests/contract/[name]_test.rs
+- [ ] T014 [P] [US1] Integration test for [user journey] in backend/tests/integration/[name]_test.rs (or frontend/tests/integration/[name].spec.ts)
 
 ### Implementation for User Story 1
 
-- [ ] T012 [P] [US1] Create [Entity1] model in src/models/[entity1].py
-- [ ] T013 [P] [US1] Create [Entity2] model in src/models/[entity2].py
-- [ ] T014 [US1] Implement [Service] in src/services/[service].py (depends on T012, T013)
-- [ ] T015 [US1] Implement [endpoint/feature] in src/[location]/[file].py
-- [ ] T016 [US1] Add validation and error handling
-- [ ] T017 [US1] Add logging for user story 1 operations
+- [ ] T015 [P] [US1] Create backend model/domain types in backend/src/models/[entity].rs
+- [ ] T016 [US1] Implement backend service/handler in backend/src/services/[service].rs
+- [ ] T017 [US1] Implement API route in backend/src/api/[path].rs (depends on T015, T016)
+- [ ] T018 [US1] Implement frontend flow/components in frontend/src/[location]/[file].tsx
+- [ ] T019 [US1] Add validation and error handling (frontend + backend)
+- [ ] T020 [US1] Add logging/tracing for user story 1 operations with PII-safe redaction
 
 **Checkpoint**: At this point, User Story 1 should be fully functional and testable independently
 
@@ -105,17 +111,17 @@ Examples of foundational tasks (adjust based on your project):
 
 **Independent Test**: [How to verify this story works on its own]
 
-### Tests for User Story 2 (OPTIONAL - only if tests requested) ⚠️
+### Tests for User Story 2 (core flows REQUIRED)
 
-- [ ] T018 [P] [US2] Contract test for [endpoint] in tests/contract/test_[name].py
-- [ ] T019 [P] [US2] Integration test for [user journey] in tests/integration/test_[name].py
+- [ ] T021 [P] [US2] Contract test for [endpoint] in backend/tests/contract/[name]_test.rs
+- [ ] T022 [P] [US2] Integration/E2E test for [user journey] in frontend/tests/integration/[name].spec.ts or backend/tests/integration/[name]_test.rs
 
 ### Implementation for User Story 2
 
-- [ ] T020 [P] [US2] Create [Entity] model in src/models/[entity].py
-- [ ] T021 [US2] Implement [Service] in src/services/[service].py
-- [ ] T022 [US2] Implement [endpoint/feature] in src/[location]/[file].py
-- [ ] T023 [US2] Integrate with User Story 1 components (if needed)
+- [ ] T023 [P] [US2] Create backend model/domain types in backend/src/models/[entity].rs
+- [ ] T024 [US2] Implement backend service/handler in backend/src/services/[service].rs
+- [ ] T025 [US2] Implement API route or worker in backend/src/api/[path].rs or backend/src/workers/[name].rs
+- [ ] T026 [US2] Integrate with User Story 1 components (frontend/backend) while keeping stories independently testable
 
 **Checkpoint**: At this point, User Stories 1 AND 2 should both work independently
 
@@ -127,16 +133,17 @@ Examples of foundational tasks (adjust based on your project):
 
 **Independent Test**: [How to verify this story works on its own]
 
-### Tests for User Story 3 (OPTIONAL - only if tests requested) ⚠️
+### Tests for User Story 3 (core flows REQUIRED)
 
-- [ ] T024 [P] [US3] Contract test for [endpoint] in tests/contract/test_[name].py
-- [ ] T025 [P] [US3] Integration test for [user journey] in tests/integration/test_[name].py
+- [ ] T027 [P] [US3] Contract test for [endpoint] in backend/tests/contract/[name]_test.rs
+- [ ] T028 [P] [US3] Integration/E2E test for [user journey] in frontend/tests/integration/[name].spec.ts or backend/tests/integration/[name]_test.rs
 
 ### Implementation for User Story 3
 
-- [ ] T026 [P] [US3] Create [Entity] model in src/models/[entity].py
-- [ ] T027 [US3] Implement [Service] in src/services/[service].py
-- [ ] T028 [US3] Implement [endpoint/feature] in src/[location]/[file].py
+- [ ] T029 [P] [US3] Create backend model/domain types in backend/src/models/[entity].rs
+- [ ] T030 [US3] Implement backend service/handler in backend/src/services/[service].rs
+- [ ] T031 [US3] Implement API route or worker in backend/src/api/[path].rs or backend/src/workers/[name].rs
+- [ ] T032 [US3] Implement frontend flow/components in frontend/src/[location]/[file].tsx (if applicable)
 
 **Checkpoint**: All user stories should now be independently functional
 
@@ -153,7 +160,7 @@ Examples of foundational tasks (adjust based on your project):
 - [ ] TXXX [P] Documentation updates in docs/
 - [ ] TXXX Code cleanup and refactoring
 - [ ] TXXX Performance optimization across all stories
-- [ ] TXXX [P] Additional unit tests (if requested) in tests/unit/
+- [ ] TXXX [P] Additional unit tests (beyond core coverage) in tests/unit/
 - [ ] TXXX Security hardening
 - [ ] TXXX Run quickstart.md validation
 
@@ -198,13 +205,13 @@ Examples of foundational tasks (adjust based on your project):
 ## Parallel Example: User Story 1
 
 ```bash
-# Launch all tests for User Story 1 together (if tests requested):
-Task: "Contract test for [endpoint] in tests/contract/test_[name].py"
-Task: "Integration test for [user journey] in tests/integration/test_[name].py"
+# Launch all core tests for User Story 1 together:
+Task: "Contract test for [endpoint] in backend/tests/contract/[name]_test.rs"
+Task: "Integration/E2E test for [user journey] in frontend/tests/integration/[name].spec.ts"
 
 # Launch all models for User Story 1 together:
-Task: "Create [Entity1] model in src/models/[entity1].py"
-Task: "Create [Entity2] model in src/models/[entity2].py"
+Task: "Create [Entity1] model in backend/src/models/[entity1].rs"
+Task: "Create [Entity2] model in backend/src/models/[entity2].rs"
 ```
 
 ---

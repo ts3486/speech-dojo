@@ -1,0 +1,17 @@
+[
+  {
+    "title": "Introduce Yourself Clearly",
+    "difficulty": "easy",
+    "prompt_hint": "Share your name, what you do, and one fun fact."
+  },
+  {
+    "title": "Tell a Memorable Trip Story",
+    "difficulty": "medium",
+    "prompt_hint": "Describe where you went, what surprised you, and what you learned."
+  },
+  {
+    "title": "Pitch a New Idea",
+    "difficulty": "hard",
+    "prompt_hint": "Explain the problem, your solution, and why it matters to listeners."
+  }
+]
