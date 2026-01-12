@@ -11,6 +11,7 @@
 - Copy `frontend/.env.example` to `.env` and set `VITE_API_BASE_URL` to backend origin.
 - Implement flows: topic selection, mic permission prompt, session start/stop, live status, transcript display, history list/detail, audio replay.
 - Use WebRTC to OpenAI Realtime with backend-issued client secrets; record audio locally (MediaRecorder) and upload on end.
+- Install/run with pnpm: `pnpm install`, `pnpm dev`, `pnpm test` (Vitest).
 
 3) **Testing**
 - Frontend: Vitest for UI/session-state flows and error handling (mic denial, token expiry, network drop).
