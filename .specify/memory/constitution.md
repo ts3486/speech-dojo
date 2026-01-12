@@ -1,50 +1,80 @@
-# [PROJECT_NAME] Constitution
-<!-- Example: Spec Constitution, TaskFlow Constitution, etc. -->
+<!--
+Sync Impact Report
+Version change: N/A → 1.0.0
+Modified principles:
+- Non-negotiables list → P1 Security & Privacy, P2 Realtime Experience, P3 Reliability & Data Integrity, P4 Architecture Boundaries, P5 Product Scope Discipline, P6 Testing & Quality, P7 Observability & Maintainability
+Added sections:
+- Governance rules populated
+Removed sections:
+- None
+Templates requiring updates:
+- ✅ .specify/templates/plan-template.md
+- ✅ .specify/templates/spec-template.md
+- ✅ .specify/templates/tasks-template.md
+Follow-up TODOs:
+- None
+-->
+# Speech Dojo Constitution
 
 ## Core Principles
 
-### [PRINCIPLE_1_NAME]
-<!-- Example: I. Library-First -->
-[PRINCIPLE_1_DESCRIPTION]
-<!-- Example: Every feature starts as a standalone library; Libraries must be self-contained, independently testable, documented; Clear purpose required - no organizational-only libraries -->
+### P1. Security & Privacy
+- OpenAI API keys MUST never be exposed to the browser; the Rust backend mints short-lived client secrets.
+- Sessions default to private; publishing requires explicit user action and consent.
+- Users MUST be able to delete or export their sessions and data without backend overrides.
+- Backend services and logs MUST avoid storing sensitive content; data retention follows least-privilege.
+**Rationale**: Protect user trust and prevent credential leakage.
 
-### [PRINCIPLE_2_NAME]
-<!-- Example: II. CLI Interface -->
-[PRINCIPLE_2_DESCRIPTION]
-<!-- Example: Every library exposes functionality via CLI; Text in/out protocol: stdin/args → stdout, errors → stderr; Support JSON + human-readable formats -->
+### P2. Realtime Experience
+- Voice interactions MUST use WebRTC for browser sessions unless a justified fallback is documented.
+- Latency-sensitive paths SHOULD prioritize low-overhead codecs and minimal server hops.
+- Network interruptions MUST be handled gracefully so sessions can end and save without data loss.
+**Rationale**: The product value depends on conversational, low-latency feedback.
 
-### [PRINCIPLE_3_NAME]
-<!-- Example: III. Test-First (NON-NEGOTIABLE) -->
-[PRINCIPLE_3_DESCRIPTION]
-<!-- Example: TDD mandatory: Tests written → User approved → Tests fail → Then implement; Red-Green-Refactor cycle strictly enforced -->
+### P3. Reliability & Data Integrity
+- Audio recordings and transcripts MUST be persisted even if AI rating or post-processing fails.
+- Session creation, finalization, and storage MUST be idempotent.
+- Partial transcripts MUST NOT overwrite finalized transcripts.
+**Rationale**: Users need trustworthy records of every coaching session.
 
-### [PRINCIPLE_4_NAME]
-<!-- Example: IV. Integration Testing -->
-[PRINCIPLE_4_DESCRIPTION]
-<!-- Example: Focus areas requiring integration tests: New library contract tests, Contract changes, Inter-service communication, Shared schemas -->
+### P4. Architecture Boundaries
+- Monorepo layout: frontend/ (React + Tailwind + Vitest), backend/ (Rust Axum API, DB, OpenAI token mint), specs/ (feature specs), .specify/ (Spec Kit config/templates).
+- Frontend owns UI state, audio capture, WebRTC connection to OpenAI Realtime, and rendering transcripts/history.
+- Backend owns authentication, topics, session persistence, file uploads, rating workers, and OpenAI integration.
+- Business logic MUST NOT leak into the frontend; the backend mints all OpenAI client secrets.
+**Rationale**: Clear ownership prevents coupling and keeps secrets server-side.
 
-### [PRINCIPLE_5_NAME]
-<!-- Example: V. Observability, VI. Versioning & Breaking Changes, VII. Simplicity -->
-[PRINCIPLE_5_DESCRIPTION]
-<!-- Example: Text I/O ensures debuggability; Structured logging required; Or: MAJOR.MINOR.BUILD format; Or: Start simple, YAGNI principles -->
+### P5. Product Scope Discipline
+- MVP path: topic selection → voice session → transcript → history (rating optional but preferred).
+- Social features, payments, and advanced analytics are out of scope until core retention is validated.
+- Avoid premature optimization; prefer iterative delivery with measurable user impact.
+**Rationale**: Focus keeps the product shippable and learning-driven.
 
-## [SECTION_2_NAME]
-<!-- Example: Additional Constraints, Security Requirements, Performance Standards, etc. -->
+### P6. Testing & Quality
+- Frontend uses Vitest for core UI and session-state coverage.
+- Backend includes unit tests for services and integration tests for key APIs.
+- Error states MUST be handled for mic permissions, network drops, and token expiration with user feedback.
+**Rationale**: Quality gates ensure reliable coaching experiences.
 
-[SECTION_2_CONTENT]
-<!-- Example: Technology stack requirements, compliance standards, deployment policies, etc. -->
+### P7. Observability & Maintainability
+- Log session lifecycle events and failures without storing sensitive user content.
+- Errors MUST be actionable and traceable; avoid noisy or personal data in logs.
+- Code favors clarity over cleverness to ease future changes.
+**Rationale**: PII-safe observability enables fast diagnosis without privacy risk.
 
-## [SECTION_3_NAME]
-<!-- Example: Development Workflow, Review Process, Quality Gates, etc. -->
-
-[SECTION_3_CONTENT]
-<!-- Example: Code review requirements, testing gates, deployment approval process, etc. -->
+### Definition of Done
+- Feature works end-to-end in a modern browser (Chrome/Safari).
+- Acceptance criteria in the spec are satisfied.
+- Security and privacy constraints are upheld.
+- Deterministic acceptance checks pass; error states are covered.
 
 ## Governance
-<!-- Example: Constitution supersedes all other practices; Amendments require documentation, approval, migration plan -->
 
-[GOVERNANCE_RULES]
-<!-- Example: All PRs/reviews must verify compliance; Complexity must be justified; Use [GUIDANCE_FILE] for runtime development guidance -->
+- This constitution governs delivery and review; deviations require a documented exception in the spec/plan with owner approval.
+- Amendments require a PR, a semantic version bump, and updates to plan/spec/tasks templates when principles change.
+- Compliance: Every PR/review includes a Constitution Check covering all principles and the Definition of Done.
+- Versioning: MAJOR for breaking principle/governance changes; MINOR for new or expanded principles; PATCH for clarifications.
+- Ratification: Maintainers record the ratification date at first adoption; last amended date updates on merged changes.
+- Runtime guidance: /speckit.* commands and resulting artifacts MUST cite any intentional deviations.
 
-**Version**: [CONSTITUTION_VERSION] | **Ratified**: [RATIFICATION_DATE] | **Last Amended**: [LAST_AMENDED_DATE]
-<!-- Example: Version: 2.1.1 | Ratified: 2025-06-13 | Last Amended: 2025-07-16 -->
+**Version**: 1.0.0 | **Ratified**: 2026-01-11 | **Last Amended**: 2026-01-11
