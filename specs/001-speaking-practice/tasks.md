@@ -37,13 +37,13 @@ description: "Task list for realtime speaking practice feature"
 
 ## Phase 2: Foundational (Blocking Prerequisites)
 
-- [ ] T005 Create Postgres migrations for topics/sessions/transcripts/client_secrets/audio_recordings (backend/migrations/001_init.sql)
-- [ ] T006 [P] Implement DB models and queries for Topic/Session/Transcript/ClientSecret/AudioRecording (backend/src/models)
-- [ ] T007 [P] Configure S3 client and bucket wiring for audio uploads (backend/src/services/storage.rs)
-- [ ] T008 [P] Configure tracing/logging with PII redaction for session endpoints (backend/src/main.rs)
-- [ ] T009 Add auth guard/middleware ensuring owner-only access to session routes (backend/src/api/mod.rs)
-- [ ] T010 [P] Implement topics seeding command using fixture (backend/src/bin/seed_topics.rs)
-- [ ] T011 Set up frontend realtime service scaffold for client-secret flow (frontend/src/services/realtime.ts)
+- [X] T005 Create Postgres migrations for topics/sessions/transcripts/client_secrets/audio_recordings (backend/migrations/001_init.sql)
+- [X] T006 [P] Implement DB models and queries for Topic/Session/Transcript/ClientSecret/AudioRecording (backend/src/models)
+- [X] T007 [P] Configure S3 client and bucket wiring for audio uploads (backend/src/services/storage.rs)
+- [X] T008 [P] Configure tracing/logging with PII redaction for session endpoints (backend/src/main.rs)
+- [X] T009 Add auth guard/middleware ensuring owner-only access to session routes (backend/src/api/mod.rs)
+- [X] T010 [P] Implement topics seeding command using fixture (backend/src/bin/seed_topics.rs)
+- [X] T011 Set up frontend realtime service scaffold for client-secret flow (frontend/src/services/realtime.ts)
 
 ## Phase 3: User Story 1 - Guided speaking session (Priority: P1) 🎯 MVP
 
