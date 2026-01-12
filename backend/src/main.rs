@@ -1,8 +1,8 @@
+use axum::Router;
 use backend::api;
 use backend::services::storage::StorageService;
 use backend::state::AppState;
 use backend::telemetry;
-use axum::Router;
 use sqlx::postgres::PgPoolOptions;
 use std::net::SocketAddr;
 use std::time::Duration;

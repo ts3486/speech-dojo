@@ -1,7 +1,7 @@
 use crate::models::topic::Topic;
 use crate::state::SharedState;
-use axum::{routing::get, Json, Router};
 use axum::extract::State;
+use axum::{routing::get, Json, Router};
 
 pub fn topics_router() -> Router<SharedState> {
     Router::new().route("/topics", get(list_topics))

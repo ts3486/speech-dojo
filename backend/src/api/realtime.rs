@@ -5,8 +5,8 @@ use axum::routing::post;
 use axum::Router;
 use chrono::{Duration, Utc};
 use serde::{Deserialize, Serialize};
-use uuid::Uuid;
 use tracing::info;
+use uuid::Uuid;
 
 use crate::auth::CurrentUser;
 use crate::models::client_secret::{ClientSecret, NewClientSecret};

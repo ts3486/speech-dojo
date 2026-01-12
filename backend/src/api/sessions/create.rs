@@ -2,8 +2,8 @@ use axum::extract::{Json, State};
 use axum::http::StatusCode;
 use axum::response::IntoResponse;
 use serde::Deserialize;
-use uuid::Uuid;
 use tracing::info;
+use uuid::Uuid;
 
 use crate::auth::CurrentUser;
 use crate::services::sessions;

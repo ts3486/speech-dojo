@@ -1,8 +1,8 @@
 use axum::extract::{Multipart, Path, State};
 use axum::http::StatusCode;
 use axum::response::IntoResponse;
-use uuid::Uuid;
 use tracing::info;
+use uuid::Uuid;
 
 use crate::models::audio_recording::{AudioRecording, NewAudioRecording};
 use crate::state::SharedState;
@@ -26,20 +26,10 @@ pub async fn upload_audio(
                     .map(|s| s.to_string())
                     .unwrap_or_else(|| filename.clone());
                 mime = field.content_type().map(|s| s.to_string());
-                content = Some(
-                    field
-                        .bytes()
-                        .await
-                        .map(|b| b.to_vec())
-                        .unwrap_or_default(),
-                );
+                content = Some(field.bytes().await.map(|b| b.to_vec()).unwrap_or_default());
             }
             Some("duration_seconds") => {
-                let val = field
-                    .text()
-                    .await
-                    .ok()
-                    .and_then(|v| v.parse::<i32>().ok());
+                let val = field.text().await.ok().and_then(|v| v.parse::<i32>().ok());
                 duration = val;
             }
             _ => {}
@@ -48,7 +38,10 @@ pub async fn upload_audio(
 
     let bytes = match content {
         Some(c) if !c.is_empty() => c,
-        _ => return StatusCode::BAD_REQUEST.into_response(),
+        _ => {
+            eprintln!("upload failed: missing or empty file field");
+            return StatusCode::BAD_REQUEST.into_response();
+        }
     };
 
     let key = format!("sessions/{}/{}", id, filename);
@@ -60,7 +53,7 @@ pub async fn upload_audio(
     {
         Ok(u) => u,
         Err(err) => {
-            eprintln!("upload failed: {:?}", err);
+            eprintln!("upload failed (storage): {:?}", err);
             return StatusCode::INTERNAL_SERVER_ERROR.into_response();
         }
     };

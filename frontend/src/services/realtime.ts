@@ -13,10 +13,17 @@ export interface RealtimeClient {
   finalize: () => Promise<void>;
 }
 
-export async function fetchClientSecret(apiBase: string, sessionId: string): Promise<ClientSecretResponse> {
+export async function fetchClientSecret(
+  apiBase: string,
+  sessionId: string,
+  userId?: string
+): Promise<ClientSecretResponse> {
   const res = await fetch(`${apiBase}/api/realtime/session`, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: {
+      "Content-Type": "application/json",
+      ...(userId ? { "x-user-id": userId } : {})
+    },
     body: JSON.stringify({ session_id: sessionId })
   });
   if (!res.ok) {
@@ -25,7 +32,7 @@ export async function fetchClientSecret(apiBase: string, sessionId: string): Pro
   return res.json();
 }
 
-export function createRealtimeClient(apiBase: string, sessionId: string): RealtimeClient {
+export function createRealtimeClient(apiBase: string, sessionId: string, userId?: string): RealtimeClient {
   let status: RealtimeStatus = "idle";
 
   return {
@@ -35,7 +42,7 @@ export function createRealtimeClient(apiBase: string, sessionId: string): Realti
     async start() {
       status = "connecting";
       // Placeholder: integrate WebRTC + OpenAI Realtime here using client secret.
-      const { client_secret } = await fetchClientSecret(apiBase, sessionId);
+      const { client_secret } = await fetchClientSecret(apiBase, sessionId, userId);
       console.debug("Obtained client secret", client_secret);
       status = "listening";
     },
