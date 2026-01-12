@@ -1,5 +1,0 @@
-#[tokio::test]
-async fn realtime_session_contract_compiles() {
-    // Placeholder contract test; relies on running API server for full validation.
-    assert!(true);
-}
