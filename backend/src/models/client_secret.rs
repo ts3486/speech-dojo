@@ -20,10 +20,7 @@ pub struct NewClientSecret {
 }
 
 impl ClientSecret {
-    pub async fn insert(
-        pool: &PgPool,
-        payload: NewClientSecret,
-    ) -> anyhow::Result<ClientSecret> {
+    pub async fn insert(pool: &PgPool, payload: NewClientSecret) -> anyhow::Result<ClientSecret> {
         let row = sqlx::query_as::<_, ClientSecret>(
             r#"
             INSERT INTO client_secrets (session_id, token, expires_at)

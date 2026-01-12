@@ -26,7 +26,10 @@ pub struct NewAudioRecording {
 }
 
 impl AudioRecording {
-    pub async fn insert(pool: &PgPool, payload: NewAudioRecording) -> anyhow::Result<AudioRecording> {
+    pub async fn insert(
+        pool: &PgPool,
+        payload: NewAudioRecording,
+    ) -> anyhow::Result<AudioRecording> {
         let row = sqlx::query_as::<_, AudioRecording>(
             r#"
             INSERT INTO audio_recordings (session_id, storage_url, duration_seconds, mime_type, size_bytes, quality_status)

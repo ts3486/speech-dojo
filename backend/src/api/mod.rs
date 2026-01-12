@@ -1,17 +1,37 @@
 use crate::api::health::health;
+use crate::api::realtime::realtime_router;
+use crate::api::sessions::sessions_router;
+use crate::api::topics::topics_router;
 use crate::state::SharedState;
 use axum::body::Body;
 use axum::http::Request;
+use axum::middleware::Next;
 use axum::routing::get;
 use axum::{middleware, Router};
+use tower_http::cors::CorsLayer;
 use tower_http::trace::TraceLayer;
-use axum::middleware::Next;
 
 mod health;
+mod realtime;
+mod sessions;
+mod topics;
 
 pub fn router(state: SharedState) -> Router {
+    let cors = CorsLayer::permissive();
+
+    let api = Router::new()
+        .merge(topics_router())
+        .merge(sessions_router())
+        .merge(realtime_router())
+        .layer(cors.clone())
+        .layer(TraceLayer::new_for_http())
+        .layer(middleware::from_fn(auth_maybe))
+        .with_state(state.clone());
+
     Router::new()
         .route("/health", get(health))
+        .nest("/api", api)
+        .layer(cors)
         .layer(TraceLayer::new_for_http())
         .layer(middleware::from_fn(auth_maybe))
         .with_state(state)
