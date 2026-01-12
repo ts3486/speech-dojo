@@ -55,7 +55,7 @@ description: "Task list for realtime speaking practice feature"
 
 - [X] T012 [P] [US1] Contract test for POST /api/sessions create (backend/tests/contract/sessions_create.rs)
 - [X] T013 [P] [US1] Contract test for POST /api/realtime/session client secret issuance (backend/tests/contract/realtime_session.rs)
-- [X] T014 [US1] Integration test for session start/end + transcript display (frontend/tests/integration/session.spec.ts)
+- [X] T014 [US1] Integration test for session start/end + transcript display (frontend/tests/integration/session.spec.tsx)
 
 ### Implementation for User Story 1
 
@@ -83,19 +83,19 @@ description: "Task list for realtime speaking practice feature"
 
 ### Tests for User Story 2 (core flows REQUIRED)
 
-- [ ] T028 [P] [US2] Contract test for GET /api/sessions list + GET /api/sessions/{id} detail (backend/tests/contract/sessions_get.rs)
-- [ ] T029 [P] [US2] Contract test for DELETE /api/sessions/{id} (backend/tests/contract/sessions_delete.rs)
-- [ ] T030 [US2] Integration test for history list/detail/replay flow (frontend/tests/integration/history.spec.ts)
+- [X] T028 [P] [US2] Contract test for GET /api/sessions list + GET /api/sessions/{id} detail (backend/tests/contract/sessions_get.rs)
+- [X] T029 [P] [US2] Contract test for DELETE /api/sessions/{id} (backend/tests/contract/sessions_get.rs)
+- [X] T030 [US2] Integration test for history list/detail/replay flow (frontend/tests/integration/history.spec.tsx)
 
 ### Implementation for User Story 2
 
-- [ ] T031 [US2] Implement GET /api/sessions (history list, newest first, owner-only) (backend/src/api/sessions/list.rs)
-- [ ] T032 [US2] Implement GET /api/sessions/{id} with transcript and audio reference (backend/src/api/sessions/detail.rs)
-- [ ] T033 [US2] Implement DELETE /api/sessions/{id} with owner check and tombstone/removal (backend/src/api/sessions/delete.rs)
-- [ ] T034 [US2] Add history projection/query helper (backend/src/services/history.rs)
-- [ ] T035 [US2] Build history page with empty-state messaging (frontend/src/pages/history.tsx)
-- [ ] T036 [US2] Build session detail page with transcript view and audio player controls (frontend/src/pages/session-detail.tsx)
-- [ ] T037 [P] [US2] Add delete action with confirmation and optimistic UI (frontend/src/components/SessionActions.tsx)
+- [X] T031 [US2] Implement GET /api/sessions (history list, newest first, owner-only) (backend/src/api/sessions/list.rs)
+- [X] T032 [US2] Implement GET /api/sessions/{id} with transcript and audio reference (backend/src/api/sessions/detail.rs)
+- [X] T033 [US2] Implement DELETE /api/sessions/{id} with owner check and tombstone/removal (backend/src/api/sessions/delete.rs)
+- [X] T034 [US2] Add history projection/query helper (backend/src/services/history.rs)
+- [X] T035 [US2] Build history page with empty-state messaging (frontend/src/pages/history.tsx)
+- [X] T036 [US2] Build session detail page with transcript view and audio player controls (frontend/src/pages/session-detail.tsx)
+- [X] T037 [P] [US2] Add delete action with confirmation and optimistic UI (frontend/src/pages/history.tsx)
 
 **Checkpoint**: At this point, User Stories 1 AND 2 should both work independently.
 

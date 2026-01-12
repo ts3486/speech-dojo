@@ -35,7 +35,7 @@ User views their private session history, opens a past session, reads the transc
 **Acceptance Scenarios**:
 
 1. **Given** saved sessions exist, **When** the user opens history, **Then** entries are listed newest first with topic, timestamp, duration, and privacy status.
-2. **Given** a session detail page, **When** the user opens it, **Then** the full transcript is visible and audio playback controls work (play/pause/seek).
+2. **Given** a session detail page, **When** the user opens it (via a dedicated `/sessions/:id` route), **Then** the full transcript is visible and audio playback controls work (play/pause/seek).
 
 ---
 
@@ -74,6 +74,7 @@ User can recover from common failures (network drop, token/permission issues) wi
 - **FR-006**: Allow the user to end a session at any time and still save captured audio/transcript/metadata.
 - **FR-007**: Detect and handle connection failures or token expiry during a session with options to retry or end without losing captured data.
 - **FR-008**: Show a history view listing saved sessions (newest first) with topic, date/time, duration, and status; allow opening a session to view transcript and replay audio.
+- **FR-008a**: Provide dedicated routed pages: Session start (`/` or `/session`), History (`/history`), and Session detail (`/sessions/:id`), with nav links between them. Home/landing is not required at this stage.
 - **FR-009**: Ensure sessions are private by default; no public publishing; user can delete their session records from history.
 - **FR-010**: Provide audio playback controls on session detail (play/pause/seek) and ensure transcript remains available if playback fails.
 

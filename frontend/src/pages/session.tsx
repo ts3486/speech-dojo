@@ -4,12 +4,10 @@ import { requestMic } from "../services/mic";
 import { SessionRecorder } from "../services/recorder";
 import { TranscriptView } from "../components/TranscriptView";
 import { useRef } from "react";
+import { API_BASE, DEMO_USER } from "../config";
 
 type Topic = { id: string; title: string; difficulty?: string | null; prompt_hint?: string | null };
 type Session = { id: string; topic_id: string; status: string };
-
-const API_BASE = import.meta.env.VITE_API_BASE_URL || "http://localhost:8000";
-const DEMO_USER = "00000000-0000-0000-0000-000000000001";
 
 export default function SessionPage() {
   const [topics, setTopics] = useState<Topic[]>([]);
@@ -74,7 +72,7 @@ export default function SessionPage() {
       setSession(sess);
       pushLog(`Session created: ${sess.id}`);
 
-    const client = createRealtimeClient(API_BASE, sess.id, DEMO_USER);
+      const client = createRealtimeClient(API_BASE, sess.id, DEMO_USER);
       setStatus("connecting");
       realtimeRef.current = client;
       await client.start();
