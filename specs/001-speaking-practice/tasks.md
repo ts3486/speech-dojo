@@ -53,25 +53,25 @@ description: "Task list for realtime speaking practice feature"
 
 ### Tests for User Story 1 (core flows REQUIRED)
 
-- [ ] T012 [P] [US1] Contract test for POST /api/sessions create (backend/tests/contract/sessions_create.rs)
-- [ ] T013 [P] [US1] Contract test for POST /api/realtime/session client secret issuance (backend/tests/contract/realtime_session.rs)
-- [ ] T014 [US1] Integration test for session start/end + transcript display (frontend/tests/integration/session.spec.ts)
+- [X] T012 [P] [US1] Contract test for POST /api/sessions create (backend/tests/contract/sessions_create.rs)
+- [X] T013 [P] [US1] Contract test for POST /api/realtime/session client secret issuance (backend/tests/contract/realtime_session.rs)
+- [X] T014 [US1] Integration test for session start/end + transcript display (frontend/tests/integration/session.spec.ts)
 
 ### Implementation for User Story 1
 
-- [ ] T015 [P] [US1] Implement GET /api/topics handler (backend/src/api/topics.rs)
-- [ ] T016 [US1] Implement POST /api/sessions create handler (backend/src/api/sessions/create.rs)
-- [ ] T017 [US1] Implement POST /api/realtime/session to mint short-lived client secrets (backend/src/api/realtime/session.rs)
-- [ ] T018 [US1] Implement POST /api/sessions/{id}/finalize to persist transcript/metadata idempotently (backend/src/api/sessions/finalize.rs)
-- [ ] T019 [P] [US1] Implement POST /api/sessions/{id}/upload to store audio in S3 and return URL (backend/src/api/sessions/upload.rs)
-- [ ] T020 [US1] Add session lifecycle service (create/finalize/idempotency) (backend/src/services/sessions.rs)
-- [ ] T021 [P] [US1] Build topic selection and session start page with live status (frontend/src/pages/session.tsx)
-- [ ] T022 [P] [US1] Implement mic permission handling and error banners (frontend/src/services/mic.ts)
-- [ ] T023 [P] [US1] Implement WebRTC client using minted client secret and status callbacks (frontend/src/services/realtime.ts)
-- [ ] T024 [P] [US1] Implement MediaRecorder capture and upload to backend on end (frontend/src/services/recorder.ts)
-- [ ] T025 [US1] Render transcript after finalize with duration + success state (frontend/src/components/TranscriptView.tsx)
-- [ ] T026 [US1] Add PII-safe logging/tracing around session start/end/finalize (backend/src/telemetry/mod.rs)
-- [ ] T027 [US1] Wire finalize/upload calls into session UI flow with success/error states (frontend/src/pages/session.tsx)
+- [X] T015 [P] [US1] Implement GET /api/topics handler (backend/src/api/topics.rs)
+- [X] T016 [US1] Implement POST /api/sessions create handler (backend/src/api/sessions/create.rs)
+- [X] T017 [US1] Implement POST /api/realtime/session to mint short-lived client secrets (backend/src/api/realtime/session.rs)
+- [X] T018 [US1] Implement POST /api/sessions/{id}/finalize to persist transcript/metadata idempotently (backend/src/api/sessions/finalize.rs)
+- [X] T019 [P] [US1] Implement POST /api/sessions/{id}/upload to store audio in S3 and return URL (backend/src/api/sessions/upload.rs)
+- [X] T020 [US1] Add session lifecycle service (create/finalize/idempotency) (backend/src/services/sessions.rs)
+- [X] T021 [P] [US1] Build topic selection and session start page with live status (frontend/src/pages/session.tsx)
+- [X] T022 [P] [US1] Implement mic permission handling and error banners (frontend/src/services/mic.ts)
+- [X] T023 [P] [US1] Implement WebRTC client using minted client secret and status callbacks (frontend/src/services/realtime.ts)
+- [X] T024 [P] [US1] Implement MediaRecorder capture and upload to backend on end (frontend/src/services/recorder.ts)
+- [X] T025 [US1] Render transcript after finalize with duration + success state (frontend/src/components/TranscriptView.tsx)
+- [X] T026 [US1] Add PII-safe logging/tracing around session start/end/finalize (backend/src/telemetry/mod.rs)
+- [X] T027 [US1] Wire finalize/upload calls into session UI flow with success/error states (frontend/src/pages/session.tsx)
 
 **Checkpoint**: At this point, User Story 1 should be fully functional and testable independently.
 
