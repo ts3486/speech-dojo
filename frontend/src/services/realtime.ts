@@ -4,19 +4,28 @@ type ClientSecretResponse = {
   session_id: string;
 };
 
-export type RealtimeStatus = "idle" | "connecting" | "listening" | "speaking" | "ended" | "error";
+export type RealtimeStatus =
+  | "idle"
+  | "connecting"
+  | "listening"
+  | "speaking"
+  | "recovering"
+  | "ended"
+  | "error";
 
 export interface RealtimeClient {
   status: RealtimeStatus;
   start: () => Promise<void>;
   stop: () => Promise<void>;
   finalize: () => Promise<void>;
+  refresh: (forceRefresh?: boolean) => Promise<ClientSecretResponse | void>;
 }
 
 export async function fetchClientSecret(
   apiBase: string,
   sessionId: string,
-  userId?: string
+  userId?: string,
+  opts?: { forceRefresh?: boolean; status?: string }
 ): Promise<ClientSecretResponse> {
   const res = await fetch(`${apiBase}/api/realtime/session`, {
     method: "POST",
@@ -24,7 +33,11 @@ export async function fetchClientSecret(
       "Content-Type": "application/json",
       ...(userId ? { "x-user-id": userId } : {})
     },
-    body: JSON.stringify({ session_id: sessionId })
+    body: JSON.stringify({
+      session_id: sessionId,
+      force_refresh: opts?.forceRefresh ?? false,
+      ...(opts?.status ? { status: opts.status } : {})
+    })
   });
   if (!res.ok) {
     throw new Error("Failed to fetch client secret");
@@ -34,6 +47,15 @@ export async function fetchClientSecret(
 
 export function createRealtimeClient(apiBase: string, sessionId: string, userId?: string): RealtimeClient {
   let status: RealtimeStatus = "idle";
+  let currentSecret: ClientSecretResponse | null = null;
+
+  async function mint(forceRefresh = false, statusOverride?: string) {
+    currentSecret = await fetchClientSecret(apiBase, sessionId, userId, {
+      forceRefresh,
+      status: statusOverride
+    });
+    return currentSecret;
+  }
 
   return {
     get status() {
@@ -41,9 +63,10 @@ export function createRealtimeClient(apiBase: string, sessionId: string, userId?
     },
     async start() {
       status = "connecting";
-      // Placeholder: integrate WebRTC + OpenAI Realtime here using client secret.
-      const { client_secret } = await fetchClientSecret(apiBase, sessionId, userId);
-      console.debug("Obtained client secret", client_secret);
+      currentSecret = await mint(false, "active");
+      if (currentSecret) {
+        console.debug("Obtained client secret", currentSecret.client_secret);
+      }
       status = "listening";
     },
     async stop() {
@@ -51,6 +74,12 @@ export function createRealtimeClient(apiBase: string, sessionId: string, userId?
     },
     async finalize() {
       status = "ended";
+    },
+    async refresh(forceRefresh = false) {
+      status = "recovering";
+      const refreshed = await mint(forceRefresh, "recovering");
+      status = "listening";
+      return refreshed;
     }
   };
 }

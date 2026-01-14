@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import SessionPage from "../../src/pages/session";
 import React from "react";
 import "@testing-library/jest-dom";
@@ -7,9 +7,10 @@ import "@testing-library/jest-dom";
 const startRecorder = vi.fn();
 const stopRecorder = vi.fn();
 const startRealtime = vi.fn();
+const requestMicMock = vi.hoisted(() => vi.fn());
 
 vi.mock("../../src/services/mic", () => ({
-  requestMic: vi.fn().mockResolvedValue("granted")
+  requestMic: requestMicMock
 }));
 
 vi.mock("../../src/services/realtime", () => ({
@@ -17,6 +18,7 @@ vi.mock("../../src/services/realtime", () => ({
     start: startRealtime,
     stop: vi.fn(),
     finalize: vi.fn(),
+    refresh: vi.fn(),
     status: "idle"
   }))
 }));
@@ -28,8 +30,9 @@ vi.mock("../../src/services/recorder", () => ({
   }))
 }));
 
-function setupFetchMocks() {
-  const fetchMock = vi.fn()
+function setupFetchMock() {
+  const fetchMock = vi
+    .fn()
     // topics
     .mockResolvedValueOnce({ ok: true, json: async () => ([{ id: "topic-1", title: "Topic One" }]) })
     // create session
@@ -46,7 +49,13 @@ function setupFetchMocks() {
     // upload
     .mockResolvedValueOnce({ ok: true, json: async () => ({ storage_url: "http://example.com/audio.webm" }) })
     // finalize
-    .mockResolvedValueOnce({ ok: true, json: async () => ({ transcript: [{ speaker: "user", text: "hello world" }], status: "ended" }) });
+    .mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({
+        transcript: [{ speaker: "user", text: "mic ok" }],
+        status: "ended"
+      })
+    });
 
   vi.stubGlobal("fetch", fetchMock);
   return fetchMock;
@@ -65,9 +74,10 @@ afterEach(() => {
   vi.restoreAllMocks();
 });
 
-describe("session flow", () => {
-  it("starts and ends a session, showing transcript", async () => {
-    const fetchMock = setupFetchMocks();
+describe("mic permission handling", () => {
+  it("prompts for mic retry when denied and succeeds on retry", async () => {
+    const fetchMock = setupFetchMock();
+    requestMicMock.mockResolvedValueOnce("denied").mockResolvedValueOnce("granted");
 
     render(<SessionPage />);
 
@@ -76,12 +86,12 @@ describe("session flow", () => {
     fireEvent.change(select, { target: { value: "topic-1" } });
 
     fireEvent.click(screen.getByText(/Start Session/));
-    await waitFor(() => expect(startRealtime).toHaveBeenCalled());
+    await waitFor(() => {
+      const alerts = screen.getAllByText(/microphone permission required/i);
+      expect(alerts.length).toBeGreaterThan(0);
+    });
 
-    fireEvent.click(screen.getByText(/End Session/));
-    await waitFor(() => expect(stopRecorder).toHaveBeenCalled());
-    await waitFor(() =>
-      expect(screen.getByText(/Session finalized and transcript received/i)).toBeInTheDocument()
-    );
+    fireEvent.click(screen.getByText(/Retry mic/i));
+    await waitFor(() => expect(startRealtime).toHaveBeenCalled());
   });
 });

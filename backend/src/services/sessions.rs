@@ -37,3 +37,19 @@ pub async fn finalize_session(
     )
     .await
 }
+
+pub async fn update_status(pool: &PgPool, session_id: Uuid, status: &str) -> anyhow::Result<()> {
+    sqlx::query(
+        r#"
+        UPDATE sessions
+        SET status = $2,
+            updated_at = now()
+        WHERE id = $1
+        "#,
+    )
+    .bind(session_id)
+    .bind(status)
+    .execute(pool)
+    .await?;
+    Ok(())
+}

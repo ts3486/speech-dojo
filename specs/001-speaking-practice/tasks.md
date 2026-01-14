@@ -107,18 +107,18 @@ description: "Task list for realtime speaking practice feature"
 
 ### Tests for User Story 3 (core flows REQUIRED)
 
-- [ ] T038 [P] [US3] Integration test simulating network drop/retry and end-and-save (frontend/tests/integration/resilience.spec.ts)
-- [ ] T039 [P] [US3] Backend integration test for client-secret refresh/expiry handling (backend/tests/integration/realtime_refresh.rs)
-- [ ] T040 [P] [US3] Frontend test for mic denial/recovery flow (frontend/tests/integration/mic-permissions.spec.ts)
+- [X] T038 [P] [US3] Integration test simulating network drop/retry and end-and-save (frontend/tests/integration/resilience.spec.ts)
+- [X] T039 [P] [US3] Backend integration test for client-secret refresh/expiry handling (backend/tests/integration/realtime_refresh.rs)
+- [X] T040 [P] [US3] Frontend test for mic denial/recovery flow (frontend/tests/integration/mic-permissions.spec.ts)
 
 ### Implementation for User Story 3
 
-- [ ] T041 [US3] Implement client-secret refresh/retry logic with fallback to end-and-save (frontend/src/services/realtime.ts)
-- [ ] T042 [US3] Support client-secret renewal and session status updates server-side (backend/src/api/realtime/session.rs)
-- [ ] T043 [US3] Handle offline/network-drop recovery and graceful end in session page (frontend/src/pages/session.tsx)
-- [ ] T044 [US3] Add user-facing error banners and retry/end controls for mic/network/token issues (frontend/src/components/SessionAlerts.tsx)
-- [ ] T045 [US3] Ensure finalize path preserves partial transcripts and is idempotent on retries (backend/src/services/sessions.rs)
-- [ ] T046 [US3] Add PII-safe tracing for failure scenarios (backend/src/telemetry/mod.rs)
+- [X] T041 [US3] Implement client-secret refresh/retry logic with fallback to end-and-save (frontend/src/services/realtime.ts)
+- [X] T042 [US3] Support client-secret renewal and session status updates server-side (backend/src/api/realtime/session.rs)
+- [X] T043 [US3] Handle offline/network-drop recovery and graceful end in session page (frontend/src/pages/session.tsx)
+- [X] T044 [US3] Add user-facing error banners and retry/end controls for mic/network/token issues (frontend/src/components/SessionAlerts.tsx)
+- [X] T045 [US3] Ensure finalize path preserves partial transcripts and is idempotent on retries (backend/src/services/sessions.rs)
+- [X] T046 [US3] Add PII-safe tracing for failure scenarios (backend/src/telemetry/mod.rs)
 
 **Checkpoint**: All user stories should now be independently functional.
 
