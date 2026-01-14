@@ -35,4 +35,23 @@ impl ClientSecret {
         .await?;
         Ok(row)
     }
+
+    pub async fn latest_for_session(
+        pool: &PgPool,
+        session_id: Uuid,
+    ) -> anyhow::Result<Option<ClientSecret>> {
+        let row = sqlx::query_as::<_, ClientSecret>(
+            r#"
+            SELECT id, session_id, token, expires_at, created_at
+            FROM client_secrets
+            WHERE session_id = $1
+            ORDER BY expires_at DESC
+            LIMIT 1
+            "#,
+        )
+        .bind(session_id)
+        .fetch_optional(pool)
+        .await?;
+        Ok(row)
+    }
 }

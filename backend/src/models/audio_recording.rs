@@ -53,4 +53,21 @@ impl AudioRecording {
         .await?;
         Ok(row)
     }
+
+    pub async fn get_by_session(
+        pool: &PgPool,
+        session_id: Uuid,
+    ) -> anyhow::Result<Option<AudioRecording>> {
+        let row = sqlx::query_as::<_, AudioRecording>(
+            r#"
+            SELECT id, session_id, storage_url, duration_seconds, mime_type, size_bytes, quality_status, created_at
+            FROM audio_recordings
+            WHERE session_id = $1
+            "#,
+        )
+        .bind(session_id)
+        .fetch_optional(pool)
+        .await?;
+        Ok(row)
+    }
 }

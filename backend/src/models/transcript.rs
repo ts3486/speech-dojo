@@ -40,7 +40,24 @@ pub async fn upsert_transcript(
     .bind(session_id)
     .bind(finalized)
     .bind(segments_json)
-    .fetch_one(pool)
-    .await?;
+        .fetch_one(pool)
+        .await?;
     Ok(record.0)
+}
+
+pub async fn get_transcript_by_session(
+    pool: &PgPool,
+    session_id: Uuid,
+) -> anyhow::Result<Option<Transcript>> {
+    let row = sqlx::query_as::<_, Transcript>(
+        r#"
+        SELECT id, session_id, finalized, segments, created_at
+        FROM transcripts
+        WHERE session_id = $1
+        "#,
+    )
+    .bind(session_id)
+    .fetch_optional(pool)
+    .await?;
+    Ok(row)
 }
