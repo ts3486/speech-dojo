@@ -1,6 +1,9 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { TranscriptView } from "../components/TranscriptView";
+import { StatusChip } from "../components/ui/StatusChip";
+import { Card } from "../components/ui/Card";
+import { Button } from "../components/ui/Button";
 import { API_BASE, DEMO_USER } from "../config";
 
 type TranscriptSegment = { speaker: string; text: string };
@@ -51,26 +54,54 @@ export function SessionDetailPage({ sessionId, onBack }: Props) {
   }, [id]);
 
   return (
-    <section>
-      {onBack && <button onClick={onBack}>Back to history</button>}
-      {loading && <p>Loading…</p>}
-      {error && <p style={{ color: "red" }}>{error}</p>}
-      {detail && (
-        <>
+    <section className="page session-detail">
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+        <div>
           <h2>Session Detail</h2>
-          <p>
-            <strong>Topic:</strong> {detail.topic_title}
-          </p>
-          <p>
-            <strong>Status:</strong> {detail.status} • <strong>Duration:</strong>{" "}
-            {detail.duration_seconds ?? "?"}s
-          </p>
-          {detail.audio_url && (
-            <audio src={detail.audio_url} controls style={{ display: "block", margin: "0.5rem 0" }} />
+          <div className="meta-row">
+            <span>{detail ? new Date(detail.start_time).toLocaleString() : ""}</span>
+            {detail?.duration_seconds ? <span>{detail.duration_seconds}s</span> : null}
+            {detail ? (
+              <StatusChip
+                label={detail.status}
+                tone={
+                  detail.status === "ended"
+                    ? "active"
+                    : detail.status === "recovering"
+                    ? "recovering"
+                    : detail.status === "error"
+                    ? "error"
+                    : "idle"
+                }
+              />
+            ) : null}
+          </div>
+        </div>
+        {onBack && (
+          <Button variant="secondary" onClick={onBack}>
+            Back to history
+          </Button>
+        )}
+      </div>
+
+      {loading && <p>Loading…</p>}
+      {error && <p style={{ color: "var(--color-danger)" }}>{error}</p>}
+      {detail && (
+        <Card>
+          <h3 style={{ marginTop: 0 }}>{detail.topic_title}</h3>
+          {detail.audio_url ? (
+            <audio
+              className="audio-player"
+              aria-label="session audio player"
+              src={detail.audio_url}
+              controls
+            />
+          ) : (
+            <p>No audio available for this session.</p>
           )}
-          <h3>Transcript</h3>
+          <h4>Transcript</h4>
           <TranscriptView segments={detail.transcript || []} />
-        </>
+        </Card>
       )}
     </section>
   );

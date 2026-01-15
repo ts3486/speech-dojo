@@ -40,7 +40,24 @@ describe("history flows", () => {
     );
 
     await waitFor(() => expect(screen.getByText(/Topic One/)).toBeInTheDocument());
-    expect(fetchMock).toHaveBeenCalled();
+    expect(screen.getByText(/Session History/i)).toBeInTheDocument();
+    expect(screen.getByText(/ended/i)).toBeInTheDocument();
+  });
+
+  it("shows empty state when no sessions", async () => {
+    const fetchMock = vi.fn().mockResolvedValue({
+      ok: true,
+      json: async () => ({ sessions: [] })
+    } as any);
+    vi.stubGlobal("fetch", fetchMock);
+
+    render(
+      <MemoryRouter>
+        <HistoryPage />
+      </MemoryRouter>
+    );
+
+    await waitFor(() => expect(screen.getByRole("status")).toHaveTextContent(/No sessions yet/i));
   });
 
   it("shows session detail with audio and transcript", async () => {
@@ -70,6 +87,6 @@ describe("history flows", () => {
 
     await waitFor(() => expect(screen.getByText(/Topic Two/)).toBeInTheDocument());
     expect(screen.getByText(/hello/)).toBeInTheDocument();
-    expect(fetchMock).toHaveBeenCalled();
+    expect(screen.getByLabelText(/session audio player/i)).toBeInTheDocument();
   });
 });

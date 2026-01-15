@@ -3,7 +3,10 @@ import { createRealtimeClient } from "../services/realtime";
 import { requestMic, type MicStatus } from "../services/mic";
 import { SessionRecorder } from "../services/recorder";
 import { TranscriptView } from "../components/TranscriptView";
-import { SessionAlerts, type SessionAlert } from "../components/SessionAlerts";
+import { type SessionAlert } from "../components/SessionAlerts";
+import { AlertStack, type Alert } from "../components/AlertStack";
+import { StatusBar } from "../components/StatusBar";
+import { Button } from "../components/ui/Button";
 import { API_BASE, DEMO_USER } from "../config";
 
 type Topic = { id: string; title: string; difficulty?: string | null; prompt_hint?: string | null };
@@ -22,6 +25,7 @@ export default function SessionPage() {
   const [alerts, setAlerts] = useState<SessionAlert[]>([]);
   const [isOffline, setIsOffline] = useState(!navigator.onLine);
   const [micStatus, setMicStatus] = useState<MicStatus>("idle");
+  const [tokenStatus, setTokenStatus] = useState<"idle" | "valid" | "refreshing" | "error">("idle");
   const recorderRef = useRef<SessionRecorder | null>(null);
   const realtimeRef = useRef<ReturnType<typeof createRealtimeClient> | null>(null);
 
@@ -110,17 +114,20 @@ export default function SessionPage() {
       return;
     }
     setStatus("connecting");
+    setTokenStatus("refreshing");
     try {
       await realtimeRef.current.refresh(true);
       clearAlert("network");
       clearAlert("token");
       pushLog("Realtime connection refreshed");
       setStatus("listening");
+      setTokenStatus("valid");
     } catch (err) {
       const message = err instanceof Error ? err.message : "unknown retry error";
       setError("Connection retry failed");
       pushLog(`Retry failed: ${message}`);
       showNetworkAlert();
+      setTokenStatus("error");
     }
   }
 
@@ -169,10 +176,12 @@ export default function SessionPage() {
 
       const client = createRealtimeClient(API_BASE, sess.id, DEMO_USER);
       setStatus("connecting");
+      setTokenStatus("refreshing");
       realtimeRef.current = client;
       await client.start();
       clearAlert("token");
       clearAlert("network");
+      setTokenStatus("valid");
 
       const recorder = new SessionRecorder();
       recorderRef.current = recorder;
@@ -188,6 +197,7 @@ export default function SessionPage() {
       realtimeRef.current = null;
       setSession(null);
       setStatus("error");
+      setTokenStatus("error");
       const message = err instanceof Error ? err.message : "Unknown start error";
       setError("Failed to start session");
       pushLog(`Start failed: ${message}`);
@@ -203,6 +213,7 @@ export default function SessionPage() {
     if (!session) return;
     setError(null);
     setStatus("ending");
+    setTokenStatus("refreshing");
     clearAlert("mic");
     const rec = recorderRef.current;
     if (!rec) {
@@ -228,6 +239,7 @@ export default function SessionPage() {
       setError("Upload failed");
       pushLog("Upload failed");
       setStatus("error");
+      setTokenStatus("error");
       showNetworkAlert();
       return;
     }
@@ -260,56 +272,117 @@ export default function SessionPage() {
       setTranscript((data.transcript || []).map((s: any) => ({ speaker: s.speaker, text: s.text })));
       setStatus(data.status || "ended");
       clearAlert();
+      setTokenStatus("valid");
       pushLog(
         `Session finalized and transcript received (${(data.transcript || []).length} segments)`
       );
     } else {
       setError("Finalize failed");
       setStatus("error");
+      setTokenStatus("error");
       pushLog("Finalize failed");
       showNetworkAlert();
     }
   }
 
+  const connectionState =
+    status === "listening"
+      ? "active"
+      : status === "connecting"
+      ? "connecting"
+      : isOffline
+      ? "recovering"
+      : status === "error"
+      ? "error"
+      : "idle";
+
+  const alertItems: Alert[] = alerts.map((a) => ({
+    id: a.type,
+    tone: a.type === "mic" ? "mic" : a.type === "token" ? "token" : "network",
+    message: a.message,
+    actions: a.actions
+  }));
+
   return (
-    <main>
+    <div className="page page-session">
       <h2>Realtime Session</h2>
-      {error && <p style={{ color: "red" }}>{error}</p>}
-      <SessionAlerts alerts={alerts} />
-      <label>
-        Topic:
-        <select value={selected} onChange={(e) => setSelected(e.target.value)}>
-          <option value="">Select…</option>
-          {topics.map((t) => (
-            <option key={t.id} value={t.id}>
-              {t.title} {t.difficulty ? `(${t.difficulty})` : ""}
-            </option>
-          ))}
-        </select>
-      </label>
-      <div style={{ marginTop: "1rem" }}>
-        <button onClick={startSession} disabled={status === "listening" || status === "connecting"}>
-          Start Session
-        </button>
-        <button onClick={endSession} disabled={!session || status === "ended" || !recorderReady}>
-          End Session
-        </button>
-        <p>Status: {status} • Mic: {micStatus}</p>
+      <div className="session-grid">
+        <section className="panel stack" aria-label="session controls">
+          <div className="panel-header">
+            <h3 style={{ margin: 0 }}>Live controls</h3>
+          </div>
+          <StatusBar
+            status={{
+              connection: connectionState,
+              mic: micStatus,
+              token: tokenStatus,
+              info: status === "ending" ? "Finalizing…" : undefined
+            }}
+          />
+          {error && (
+            <p role="status" style={{ color: "var(--color-danger)", margin: 0 }}>
+              {error}
+            </p>
+          )}
+          <div className="control-row">
+            <label htmlFor="topic">Topic</label>
+            <select
+              id="topic"
+              value={selected}
+              onChange={(e) => setSelected(e.target.value)}
+              aria-label="topic picker"
+            >
+              <option value="">Select…</option>
+              {topics.map((t) => (
+                <option key={t.id} value={t.id}>
+                  {t.title} {t.difficulty ? `(${t.difficulty})` : ""}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div className="actions-inline">
+            <Button onClick={startSession} disabled={status === "listening" || status === "connecting"}>
+              Start Session
+            </Button>
+            <Button
+              variant="secondary"
+              onClick={endSession}
+              disabled={!session || status === "ended" || !recorderReady}
+            >
+              End Session
+            </Button>
+          </div>
+          <div className="meta-row" aria-live="polite">
+            <span>Status: {status}</span>
+            <span>Mic: {micStatus}</span>
+          </div>
+        </section>
+
+        <section className="panel stack" aria-label="session transcript and alerts">
+          <div className="panel-header">
+            <h3 style={{ margin: 0 }}>Status & Alerts</h3>
+          </div>
+          <AlertStack alerts={alertItems} />
+          <div className="panel-header">
+            <h3 style={{ margin: 0 }}>Transcript</h3>
+          </div>
+          <TranscriptView segments={transcript} />
+          <div className="panel-header">
+            <h3 style={{ margin: 0 }}>Debug Log</h3>
+          </div>
+          <div className="debug-log" aria-label="debug-log">
+            {log.length === 0 ? (
+              <p style={{ margin: 0 }}>No events yet.</p>
+            ) : (
+              <ul style={{ margin: 0, paddingLeft: 16 }}>
+                {log.map((line, idx) => (
+                  <li key={idx}>{line}</li>
+                ))}
+              </ul>
+            )}
+          </div>
+        </section>
       </div>
-      <section>
-        <h3>Transcript</h3>
-        <TranscriptView segments={transcript} />
-      </section>
-      <section>
-        <h3>Debug Log</h3>
-        {log.length === 0 ? <p>No events yet.</p> : (
-          <ul>
-            {log.map((line, idx) => (
-              <li key={idx}>{line}</li>
-            ))}
-          </ul>
-        )}
-      </section>
-    </main>
+    </div>
   );
 }
