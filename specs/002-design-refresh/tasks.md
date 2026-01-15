@@ -29,11 +29,11 @@ description: "Task list for Speech Dojo product-wide design refresh"
 
 **Purpose**: Shared UI components and accessibility primitives used across stories.
 
-- [ ] T005 Create reusable Button/LinkButton components per tokens in `frontend/src/components/ui/Button.tsx`
-- [ ] T006 [P] Create StatusChip and Card components with variants (active/recovering/error) in `frontend/src/components/ui/StatusChip.tsx` and `frontend/src/components/ui/Card.tsx`
-- [ ] T007 [P] Implement AlertStack with role/ARIA and inline actions in `frontend/src/components/AlertStack.tsx`
-- [ ] T008 Implement StatusBar component for connection/mic/token states in `frontend/src/components/StatusBar.tsx`
-- [ ] T009 Add global accessibility utilities (`:focus-visible`, skip link styles, base typography) in `frontend/src/style.css`
+- [X] T005 Create reusable Button/LinkButton components per tokens in `frontend/src/components/ui/Button.tsx`
+- [X] T006 [P] Create StatusChip and Card components with variants (active/recovering/error) in `frontend/src/components/ui/StatusChip.tsx` and `frontend/src/components/ui/Card.tsx`
+- [X] T007 [P] Implement AlertStack with role/ARIA and inline actions in `frontend/src/components/AlertStack.tsx`
+- [X] T008 Implement StatusBar component for connection/mic/token states in `frontend/src/components/StatusBar.tsx`
+- [X] T009 Add global accessibility utilities (`:focus-visible`, skip link styles, base typography) in `frontend/src/style.css`
 
 **Checkpoint**: Foundation ready - user story work can proceed.
 
