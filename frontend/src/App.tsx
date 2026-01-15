@@ -31,7 +31,7 @@ function Shell() {
         </nav>
       </header>
 
-      <main id="main" className="page">
+      <main id="main" className="page" role="main">
         <Routes>
           <Route path="/" element={<SessionPage />} />
           <Route path="/session" element={<SessionPage />} />

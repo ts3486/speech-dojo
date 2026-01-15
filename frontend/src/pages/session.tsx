@@ -304,7 +304,7 @@ export default function SessionPage() {
   }));
 
   return (
-    <main className="page page-session">
+    <div className="page page-session">
       <h2>Realtime Session</h2>
       <div className="session-grid">
         <section className="panel stack" aria-label="session controls">
@@ -383,6 +383,6 @@ export default function SessionPage() {
           </div>
         </section>
       </div>
-    </main>
+    </div>
   );
 }

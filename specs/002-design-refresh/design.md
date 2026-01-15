@@ -52,6 +52,7 @@ Source of truth for visual and interaction patterns for the redesign. Keep align
 - `:focus-visible` on all interactive elements; skip-to-main link at top of shell.
 - ARIA labels on audio controls, alerts (`role="alert"`), status bar, and transcript rows; avoid color-only signaling.
 - Keyboard order: skip link → header/nav → page controls; ensure focus trap is not introduced.
+- Shell main region uses `role="main"`; skip link targets `#main`. StatusBar exposes `aria-label="session status"`, transcript list uses `aria-label="transcript"`, audio player uses `aria-label="session audio player"`.
 
 ## Content & Microcopy
 

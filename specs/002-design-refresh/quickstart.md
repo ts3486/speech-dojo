@@ -14,3 +14,4 @@
 - Keyboard-only navigation across header/nav and session/history/detail pages.
 - Visual check for new theme (amber/teal), AA+ contrast, focus-visible, skip-to-main.
 - Resilience flows: offline/token/mic alerts show actionable retry/end buttons.
+- A11y tokens/tests: run `pnpm test tests/components/ui-kit.spec.tsx tests/integration/a11y.spec.tsx` to verify token usage and skip-link/focus-visible behavior.

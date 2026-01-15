@@ -92,15 +92,15 @@ description: "Task list for Speech Dojo product-wide design refresh"
 
 ### Tests for User Story 3 (core flows REQUIRED)
 
-- [ ] T023 [P] [US3] Update history integration test for cards/empty state in `frontend/tests/integration/history.spec.tsx`
-- [ ] T024 [P] [US3] Add component test for session detail layout (audio + transcript rows) in `frontend/tests/components/session-detail.spec.tsx`
+- [X] T023 [P] [US3] Update history integration test for cards/empty state in `frontend/tests/integration/history.spec.tsx`
+- [X] T024 [P] [US3] Add component test for session detail layout (audio + transcript rows) in `frontend/tests/components/session-detail.spec.tsx`
 
 ### Implementation for User Story 3
 
-- [ ] T025 [US3] Redesign history list with cards/status chips/CTA empty state in `frontend/src/pages/history.tsx`
-- [ ] T026 [P] [US3] Style action buttons (Open/Delete) and confirmations per tokens in `frontend/src/pages/history.tsx`
-- [ ] T027 [US3] Redesign session detail with prominent audio player and alternating transcript rows in `frontend/src/pages/session-detail.tsx`
-- [ ] T028 [US3] Add ARIA labels for audio controls and status chips in `frontend/src/pages/session-detail.tsx`
+- [X] T025 [US3] Redesign history list with cards/status chips/CTA empty state in `frontend/src/pages/history.tsx`
+- [X] T026 [P] [US3] Style action buttons (Open/Delete) and confirmations per tokens in `frontend/src/pages/history.tsx`
+- [X] T027 [US3] Redesign session detail with prominent audio player and alternating transcript rows in `frontend/src/pages/session-detail.tsx`
+- [X] T028 [US3] Add ARIA labels for audio controls and status chips in `frontend/src/pages/session-detail.tsx`
 
 **Checkpoint**: US3 history/detail redesigned and testable independently.
 
@@ -114,14 +114,14 @@ description: "Task list for Speech Dojo product-wide design refresh"
 
 ### Tests for User Story 4 (core flows REQUIRED)
 
-- [ ] T029 [P] [US4] Add component test snapshot for tokens applied to UI kit (Button/StatusChip/Card) in `frontend/tests/components/ui-kit.spec.tsx`
-- [ ] T030 [P] [US4] Add accessibility-focused test for skip link and focus-visible in `frontend/tests/integration/a11y.spec.tsx`
+- [X] T029 [P] [US4] Add component test snapshot for tokens applied to UI kit (Button/StatusChip/Card) in `frontend/tests/components/ui-kit.spec.tsx`
+- [X] T030 [P] [US4] Add accessibility-focused test for skip link and focus-visible in `frontend/tests/integration/a11y.spec.tsx`
 
 ### Implementation for User Story 4
 
-- [ ] T031 [US4] Verify token consumption across components (no hard-coded colors/spacing) in `frontend/src/components/**` and `frontend/src/style.css`
-- [ ] T032 [P] [US4] Add skip-to-main and focus-visible handling to all page templates in `frontend/src/pages/*.tsx`
-- [ ] T033 [US4] Document accessibility and token usage in `specs/002-design-refresh/design.md` and `quickstart.md`
+- [X] T031 [US4] Verify token consumption across components (no hard-coded colors/spacing) in `frontend/src/components/**` and `frontend/src/style.css`
+- [X] T032 [P] [US4] Add skip-to-main and focus-visible handling to all page templates in `frontend/src/pages/*.tsx`
+- [X] T033 [US4] Document accessibility and token usage in `specs/002-design-refresh/design.md` and `quickstart.md`
 
 **Checkpoint**: US4 design system and accessibility applied and testable.
 
