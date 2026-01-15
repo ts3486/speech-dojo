@@ -47,14 +47,14 @@ description: "Task list for Speech Dojo product-wide design refresh"
 
 ### Tests for User Story 1 (core flows REQUIRED)
 
-- [ ] T010 [P] [US1] Add navigation accessibility/component test in `frontend/tests/components/header-nav.spec.tsx` (focus-visible, active state)
-- [ ] T011 [P] [US1] Add integration test for shell routing (Session/History) in `frontend/tests/integration/nav.spec.tsx`
+- [X] T010 [P] [US1] Add navigation accessibility/component test in `frontend/tests/components/header-nav.spec.tsx` (focus-visible, active state)
+- [X] T011 [P] [US1] Add integration test for shell routing (Session/History) in `frontend/tests/integration/nav.spec.tsx`
 
 ### Implementation for User Story 1
 
-- [ ] T012 [US1] Build styled header/nav with brand and links in `frontend/src/main.tsx` (or layout component)
-- [ ] T013 [P] [US1] Apply responsive shell layout (max width, gutters, sticky header) in `frontend/src/style.css`
-- [ ] T014 [US1] Ensure focus-visible states and aria-current on active nav links in `frontend/src/main.tsx`
+- [X] T012 [US1] Build styled header/nav with brand and links in `frontend/src/main.tsx` (or layout component)
+- [X] T013 [P] [US1] Apply responsive shell layout (max width, gutters, sticky header) in `frontend/src/style.css`
+- [X] T014 [US1] Ensure focus-visible states and aria-current on active nav links in `frontend/src/main.tsx`
 
 **Checkpoint**: US1 shell accessible and themed.
 
@@ -68,17 +68,17 @@ description: "Task list for Speech Dojo product-wide design refresh"
 
 ### Tests for User Story 2 (core flows REQUIRED)
 
-- [ ] T015 [P] [US2] Update session integration test for redesigned UI (status bar, alerts, transcript rows) in `frontend/tests/integration/session.spec.tsx`
-- [ ] T016 [P] [US2] Add component test for StatusBar/AlertStack rendering states in `frontend/tests/components/status-bar.spec.tsx`
+- [X] T015 [P] [US2] Update session integration test for redesigned UI (status bar, alerts, transcript rows) in `frontend/tests/integration/session.spec.tsx`
+- [X] T016 [P] [US2] Add component test for StatusBar/AlertStack rendering states in `frontend/tests/components/status-bar.spec.tsx`
 
 ### Implementation for User Story 2
 
-- [ ] T017 [US2] Apply two-column responsive layout to session page in `frontend/src/pages/session.tsx` and `frontend/src/style.css`
-- [ ] T018 [P] [US2] Integrate StatusBar with mic/network/token states in `frontend/src/pages/session.tsx`
-- [ ] T019 [P] [US2] Style AlertStack inline actions (retry/end) in `frontend/src/components/AlertStack.tsx`
-- [ ] T020 [US2] Style Start/End controls, timer, topic picker, and debug log per tokens in `frontend/src/pages/session.tsx`
-- [ ] T021 [US2] Style TranscriptView with speaker pills/timestamps and alternating rows in `frontend/src/components/TranscriptView.tsx`
-- [ ] T022 [US2] Add ARIA labels and focus management for session controls/alerts in `frontend/src/pages/session.tsx`
+- [X] T017 [US2] Apply two-column responsive layout to session page in `frontend/src/pages/session.tsx` and `frontend/src/style.css`
+- [X] T018 [P] [US2] Integrate StatusBar with mic/network/token states in `frontend/src/pages/session.tsx`
+- [X] T019 [P] [US2] Style AlertStack inline actions (retry/end) in `frontend/src/components/AlertStack.tsx`
+- [X] T020 [US2] Style Start/End controls, timer, topic picker, and debug log per tokens in `frontend/src/pages/session.tsx`
+- [X] T021 [US2] Style TranscriptView with speaker pills/timestamps and alternating rows in `frontend/src/components/TranscriptView.tsx`
+- [X] T022 [US2] Add ARIA labels and focus management for session controls/alerts in `frontend/src/pages/session.tsx`
 
 **Checkpoint**: US2 session UX redesigned and testable independently.
 

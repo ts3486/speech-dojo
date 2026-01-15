@@ -1,5 +1,6 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import SessionPage from "../../src/pages/session";
 import React from "react";
 import "@testing-library/jest-dom";
@@ -29,24 +30,44 @@ vi.mock("../../src/services/recorder", () => ({
 }));
 
 function setupFetchMocks() {
-  const fetchMock = vi.fn()
-    // topics
-    .mockResolvedValueOnce({ ok: true, json: async () => ([{ id: "topic-1", title: "Topic One" }]) })
-    // create session
-    .mockResolvedValueOnce({ ok: true, json: async () => ({ id: "session-1", topic_id: "topic-1", user_id: "user" }) })
-    // mint client secret
-    .mockResolvedValueOnce({
-      ok: true,
-      json: async () => ({
-        client_secret: "secret-1",
-        expires_at: new Date(Date.now() + 60_000).toISOString(),
-        session_id: "session-1"
-      })
-    })
-    // upload
-    .mockResolvedValueOnce({ ok: true, json: async () => ({ storage_url: "http://example.com/audio.webm" }) })
-    // finalize
-    .mockResolvedValueOnce({ ok: true, json: async () => ({ transcript: [{ speaker: "user", text: "hello world" }], status: "ended" }) });
+  const fetchMock = vi.fn().mockImplementation((input: RequestInfo | URL, init?: RequestInit) => {
+    const url = String(input);
+    if (url.endsWith("/api/topics")) {
+      return Promise.resolve({ ok: true, json: async () => [{ id: "topic-1", title: "Topic One" }] } as any);
+    }
+    if (url.endsWith("/api/sessions") && init?.method === "POST") {
+      return Promise.resolve({
+        ok: true,
+        json: async () => ({ id: "session-1", topic_id: "topic-1", user_id: "user" })
+      } as any);
+    }
+    if (url.includes("/api/realtime/session")) {
+      return Promise.resolve({
+        ok: true,
+        json: async () => ({
+          client_secret: "secret-1",
+          expires_at: new Date(Date.now() + 60_000).toISOString(),
+          session_id: "session-1"
+        })
+      } as any);
+    }
+    if (url.endsWith("/upload")) {
+      return Promise.resolve({
+        ok: true,
+        json: async () => ({ storage_url: "http://example.com/audio.webm" })
+      } as any);
+    }
+    if (url.endsWith("/finalize")) {
+      return Promise.resolve({
+        ok: true,
+        json: async () => ({
+          transcript: [{ speaker: "user", text: "hello world" }],
+          status: "ended"
+        })
+      } as any);
+    }
+    return Promise.resolve({ ok: true, json: async () => ({}) } as any);
+  });
 
   vi.stubGlobal("fetch", fetchMock);
   return fetchMock;
@@ -72,16 +93,24 @@ describe("session flow", () => {
     render(<SessionPage />);
 
     await waitFor(() => expect(fetchMock).toHaveBeenCalled());
-    const select = screen.getByLabelText(/Topic:/i) as HTMLSelectElement;
-    fireEvent.change(select, { target: { value: "topic-1" } });
+    const select = screen.getByLabelText(/topic picker/i) as HTMLSelectElement;
+    await userEvent.selectOptions(select, "topic-1");
 
-    fireEvent.click(screen.getByText(/Start Session/));
+    await userEvent.click(screen.getByRole("button", { name: /start session/i }));
     await waitFor(() => expect(startRealtime).toHaveBeenCalled());
 
-    fireEvent.click(screen.getByText(/End Session/));
+    await userEvent.click(screen.getByRole("button", { name: /end session/i }));
     await waitFor(() => expect(stopRecorder).toHaveBeenCalled());
     await waitFor(() =>
-      expect(screen.getByText(/Session finalized and transcript received/i)).toBeInTheDocument()
+      expect(screen.getByText(/hello world/i)).toBeInTheDocument()
+    );
+
+    expect(screen.getByLabelText(/session status/i)).toBeInTheDocument();
+
+    // simulate offline to verify alert rendering
+    window.dispatchEvent(new Event("offline"));
+    await waitFor(() =>
+      expect(screen.getByRole("alert")).toHaveTextContent(/network connection lost/i)
     );
   });
 });
