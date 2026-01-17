@@ -23,12 +23,20 @@ Source of truth for visual and interaction patterns for the redesign. Keep align
 ## Layout Patterns
 
 - **Shell**: Centered column with header (brand + nav links Session/History), sticky header, max-width 1100px with 24px gutters. Skip link lands on `#main`.
+- **Home Page**: Two stacked sections: “Practice your speech” (three topic tiles) and “Practice with an agent” (three tiles). Tiles are equal-sized cards with generous hit areas; focus-visible rings and hover states apply. Selecting a tile routes to Session with the topic prefilled.
 - **Session Page**: Two-column at ≥900px.
-  - Left (30–40%): topic selector, status bar, start/end controls, timer.
-  - Right (60–70%): alert stack, transcript with speaker tags + timestamps, compact debug log.
+  - Left (30–40%): topic selector, status bar, start/end controls, timer, and the large “Speech recording display” panel.
+  - Right (60–70%): alert stack, conversation log/transcript column, compact debug log.
   - Mobile: stack sections; keep status bar near top of main.
-- **History Page**: Vertical list of cards; each card with topic, timestamp, duration, status chip, and quick actions (Open, Delete). Empty state with illustration placeholder + “Start a session” CTA.
-- **Session Detail**: Header with topic + status chip; audio player prominent; transcript list with alternating row background per speaker; fallback message if audio missing.
+- **History Page**: Vertical list of wide row cards (matching the wireframe). Each card shows topic, timestamp, duration, status chip, and quick actions (Open, Delete). Empty state with illustration placeholder + “Start a session” CTA.
+- **Session Detail**: Header with topic + status chip; large detail panel with audio player prominent; transcript list with alternating row background per speaker; fallback message if audio missing.
+
+## Wireframe Mapping (Home → Session → History → Detail)
+
+- **Home**: Highlight Home in nav; two labeled sections with three tiles each.
+- **Session**: Highlight Session; `Topic: <name>` header; left = speech recording display, right = conversation log/transcript.
+- **History**: Highlight History; stacked row cards.
+- **History Detail**: Highlight History; “History Detail” heading with a large panel for transcript/audio/metadata.
 
 ## Components
 

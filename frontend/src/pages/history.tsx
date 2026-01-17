@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { API_BASE, DEMO_USER } from "../config";
-import { Card } from "../components/ui/Card";
 import { StatusChip } from "../components/ui/StatusChip";
 import { Button, LinkButton } from "../components/ui/Button";
 
@@ -67,7 +66,13 @@ export function HistoryPage({ onSelect }: Props) {
 
   return (
     <section className="page page-history">
-      <h2>Session History</h2>
+      <div className="page-header">
+        <div>
+          <p className="eyebrow">History</p>
+          <h2>History</h2>
+        </div>
+        <Button onClick={() => navigate("/session")}>Start a session</Button>
+      </div>
       {loading && <p>Loading…</p>}
       {error && <p style={{ color: "var(--color-danger)" }}>{error}</p>}
       {!loading && sessions.length === 0 ? (
@@ -80,50 +85,43 @@ export function HistoryPage({ onSelect }: Props) {
           </div>
         </div>
       ) : (
-        <div className="history-grid" role="list">
+        <div className="history-list" role="list">
           {sessions.map((s) => (
-            <Card
-              key={s.id}
-              title={s.topic_title}
-              actions={
-                <>
-                  {onSelect ? (
-                    <Button variant="secondary" onClick={() => onSelect(s.id)}>
-                      Open
-                    </Button>
-                  ) : (
-                    <LinkButton to={`/sessions/${s.id}`} variant="secondary">
-                      Open
-                    </LinkButton>
-                  )}
-                  <Button variant="danger" onClick={() => deleteSession(s.id)}>
-                    Delete
+            <article className="history-row" key={s.id} role="listitem">
+              <div className="history-row__content">
+                <h3>{s.topic_title}</h3>
+                <p className="meta-row">
+                  <span>{new Date(s.start_time).toLocaleString()}</span>
+                  <span>Duration: {s.duration_seconds ?? "?"}s</span>
+                  <StatusChip
+                    label={s.status}
+                    tone={
+                      s.status === "ended"
+                        ? "active"
+                        : s.status === "recovering"
+                        ? "recovering"
+                        : s.status === "error"
+                        ? "error"
+                        : "idle"
+                    }
+                  />
+                </p>
+              </div>
+              <div className="history-row__actions">
+                {onSelect ? (
+                  <Button variant="secondary" onClick={() => onSelect(s.id)}>
+                    Open
                   </Button>
-                </>
-              }
-            >
-              <div className="meta-row">
-                <span>{new Date(s.start_time).toLocaleString()}</span>
-                <span>Duration: {s.duration_seconds ?? "?"}s</span>
-                <StatusChip
-                  label={s.status}
-                  tone={
-                    s.status === "ended"
-                      ? "active"
-                      : s.status === "recovering"
-                      ? "recovering"
-                      : s.status === "error"
-                      ? "error"
-                      : "idle"
-                  }
-                />
+                ) : (
+                  <LinkButton to={`/sessions/${s.id}`} variant="secondary">
+                    Open
+                  </LinkButton>
+                )}
+                <Button variant="danger" onClick={() => deleteSession(s.id)}>
+                  Delete
+                </Button>
               </div>
-              <div className="meta-row">
-                <span>Audio: {s.has_audio ? "yes" : "no"}</span>
-                <span>Transcript: {s.has_transcript ? "yes" : "no"}</span>
-                <span>Privacy: {s.privacy}</span>
-              </div>
-            </Card>
+            </article>
           ))}
         </div>
       )}

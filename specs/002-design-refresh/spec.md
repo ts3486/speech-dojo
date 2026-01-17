@@ -15,7 +15,19 @@
 - **Interaction**: Inline alerts with actionable retries (network/mic/token), persistent status bar for session health, accessible audio controls, skip-to-main, `:focus-visible` everywhere. Motion is subtle (150–200ms fade/slide), no heavy animations.
 - **Token source**: CSS variables and typography definitions live in `frontend/src/style.css`; UI kit hover/focus styles are injected via `frontend/src/components/ui/Button.tsx` (`ButtonStyles`). See `specs/002-design-refresh/design.md` for usage guidance.
 
+## Wireframe Fit (Home → Session → History → Detail)
+
+- **Home**: Top nav highlights Home; two sections: “Practice your speech” with three topic tiles, and “Practice with an agent” with three topic tiles. Tiles are large tappable cards that start a session (self-practice or agent) with the topic prefilled.
+- **Session**: Nav highlights Session; heading reads `Topic: <name>`. Main area is a two-column layout: wide left panel for “Speech recording display” and narrower right column for “Conversation log/transcript.”
+- **History**: Nav highlights History; heading “History” with a vertical list of wide row cards representing past sessions.
+- **History Detail**: Nav highlights History; heading “History Detail” with a large detail panel for transcript/audio playback and metadata.
+
 ## User Scenarios & Testing *(mandatory)*
+
+### User Story 0 - Home topic entry (Priority: P1)
+User lands on Home, sees two groups of topic tiles (“Practice your speech” and “Practice with an agent”), and can start a session by choosing any tile.
+
+**Independent Test**: Keyboard-only user can tab through all six tiles, activate one, and land on the Session page showing `Topic: <tile label>`.
 
 ### User Story 1 - App shell & navigation (Priority: P1)
 User lands on the app, sees the refreshed header/nav, and can move between Session, History, and Session Detail routes with consistent theming and focus-visible navigation.
@@ -23,12 +35,12 @@ User lands on the app, sees the refreshed header/nav, and can move between Sessi
 **Independent Test**: Keyboard-only user can tab through header/nav, activate Session and History routes, and see consistent shell styling without layout jumps.
 
 ### User Story 2 - Realtime session experience (Priority: P1)
-User selects a topic, starts a session, and sees the redesigned two-column layout with status bar, alerts, Start/End controls, timer, transcript, and debug log.
+User selects a topic, starts a session, and sees the redesigned two-column layout with status bar, alerts, Start/End controls, timer, transcript, and debug log. Layout matches the wireframe: large speech recording display on the left, conversation log/transcript on the right.
 
 **Independent Test**: User can start/end a session; status bar reflects states; alerts appear for mic/network/token issues with inline retry/end actions; transcript renders with speaker pills and alternating rows.
 
 ### User Story 3 - History & session detail (Priority: P2)
-User opens history, sees card/list styling with status chips and empty state, opens a session detail with styled audio player and transcript presentation.
+User opens history, sees stacked row cards per wireframe with status chips and empty state, opens a session detail with styled audio player/transcript presentation.
 
 **Independent Test**: With saved sessions, history cards show topic/time/duration/status chips; empty state appears when none exist; session detail shows audio player + transcript with alternating rows and ARIA labels.
 
@@ -52,11 +64,12 @@ Design tokens, reusable components (buttons, chips, cards, alerts, status bar), 
 - **DR-001**: Implement app shell/header with nav links and brand using new theme; responsive and keyboard navigable.
 - **DR-002**: Apply design tokens (colors, typography, radius, shadow, focus) globally via CSS/Tailwind variables.
 - **DR-003**: Provide reusable UI components: Button, StatusChip, Card, AlertStack, StatusBar, TranscriptList styling.
-- **DR-004**: Redesign session page (topic picker, status bar, alerts, Start/End controls, timer, transcript, debug log) per two-column layout.
-- **DR-005**: Redesign history list with cards, status chips, empty state illustration placeholder, and CTA.
-- **DR-006**: Redesign session detail with prominent audio player, status chip, and alternating transcript rows; include ARIA labels and focus handling.
+- **DR-004**: Redesign session page (topic picker, status bar, alerts, Start/End controls, timer, transcript, debug log) per two-column layout: wide “Speech recording display” area left, “Conversation log/transcript” column right.
+- **DR-005**: Redesign history list with stacked row cards (per wireframe), status chips, empty state illustration placeholder, and CTA.
+- **DR-006**: Redesign session detail with prominent audio player, large transcript/detail panel, status chip, and alternating transcript rows; include ARIA labels and focus handling.
 - **DR-007**: Accessibility: AA+ contrast, `:focus-visible`, skip-to-main, ARIA on alerts/status/audio/transcript; avoid color-only signals.
 - **DR-008**: Maintain existing backend contracts and resilience behaviors; no secrets in frontend; respect privacy/delete.
+- **DR-009**: Implement Home landing with two topic sections (“Practice your speech” and “Practice with an agent”), each with three large topic tiles; tiles are keyboard/touch activatable and route to Session with the chosen topic prefilled.
 
 ### Assumptions
 
@@ -71,6 +84,7 @@ Design tokens, reusable components (buttons, chips, cards, alerts, status bar), 
 - **SC-003**: Session page shows status bar + alerts with actionable retries for mic/network/token issues; Start/End controls usable on mobile/desktop.
 - **SC-004**: History/detail pages render with new cards/audio/transcript styling; empty state is helpful.
 - **SC-005**: Design tokens are centrally defined and referenced in components; no hard-coded ad-hoc colors/spacing outside tokens.
+- **SC-006**: Home page shows two labeled topic sections with six accessible tiles; selecting a tile navigates to Session and displays the topic in the session header.
 
 ## Notes
 

@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import { createRealtimeClient } from "../services/realtime";
 import { requestMic, type MicStatus } from "../services/mic";
 import { SessionRecorder } from "../services/recorder";
@@ -13,6 +14,7 @@ type Topic = { id: string; title: string; difficulty?: string | null; prompt_hin
 type Session = { id: string; topic_id: string; status: string };
 
 export default function SessionPage() {
+  const [searchParams] = useSearchParams();
   const [topics, setTopics] = useState<Topic[]>([]);
   const [selected, setSelected] = useState<string>();
   const [session, setSession] = useState<Session | null>(null);
@@ -39,6 +41,17 @@ export default function SessionPage() {
         pushLog("Failed to load topics");
       });
   }, []);
+
+  useEffect(() => {
+    const topicFromUrl = searchParams.get("topicId");
+    if (topicFromUrl && topics.length > 0 && !selected) {
+      const exists = topics.some((t) => t.id === topicFromUrl);
+      if (exists) {
+        setSelected(topicFromUrl);
+        pushLog(`Preselected topic from link: ${topicFromUrl}`);
+      }
+    }
+  }, [searchParams, topics, selected]);
 
   function pushLog(message: string) {
     setLog((prev) => [...prev, message]);
@@ -303,27 +316,33 @@ export default function SessionPage() {
     actions: a.actions
   }));
 
+  const selectedTopic = topics.find((t) => t.id === selected);
+  const topicTitleFromUrl = searchParams.get("topicTitle") || undefined;
+  const topicDisplay = selectedTopic?.title || topicTitleFromUrl || "Select a topic";
+
   return (
     <div className="page page-session">
-      <h2>Realtime Session</h2>
-      <div className="session-grid">
-        <section className="panel stack" aria-label="session controls">
-          <div className="panel-header">
-            <h3 style={{ margin: 0 }}>Live controls</h3>
-          </div>
-          <StatusBar
-            status={{
-              connection: connectionState,
-              mic: micStatus,
-              token: tokenStatus,
-              info: status === "ending" ? "Finalizing…" : undefined
-            }}
-          />
-          {error && (
-            <p role="status" style={{ color: "var(--color-danger)", margin: 0 }}>
-              {error}
-            </p>
-          )}
+      <div className="page-header">
+        <div>
+          <p className="eyebrow">Session</p>
+          <h2>Topic: {topicDisplay}</h2>
+        </div>
+        <div className="actions-inline">
+          <Button onClick={startSession} disabled={status === "listening" || status === "connecting"}>
+            Start Session
+          </Button>
+          <Button
+            variant="secondary"
+            onClick={endSession}
+            disabled={!session || status === "ended" || !recorderReady}
+          >
+            End Session
+          </Button>
+        </div>
+      </div>
+
+      <div className="session-layout">
+        <section className="session-main" aria-label="session controls and recording">
           <div className="control-row">
             <label htmlFor="topic">Topic</label>
             <select
@@ -340,48 +359,51 @@ export default function SessionPage() {
               ))}
             </select>
           </div>
-          <div className="actions-inline">
-            <Button onClick={startSession} disabled={status === "listening" || status === "connecting"}>
-              Start Session
-            </Button>
-            <Button
-              variant="secondary"
-              onClick={endSession}
-              disabled={!session || status === "ended" || !recorderReady}
-            >
-              End Session
-            </Button>
-          </div>
+
+          <StatusBar
+            status={{
+              connection: connectionState,
+              mic: micStatus,
+              token: tokenStatus,
+              info: status === "ending" ? "Finalizing…" : undefined
+            }}
+          />
           <div className="meta-row" aria-live="polite">
             <span>Status: {status}</span>
             <span>Mic: {micStatus}</span>
           </div>
+          {error && (
+            <p role="status" style={{ color: "var(--color-danger)", margin: 0 }}>
+              {error}
+            </p>
+          )}
+
+          <div className="recording-panel" aria-label="speech recording display">
+            <span>Speech recording display</span>
+          </div>
         </section>
 
-        <section className="panel stack" aria-label="session transcript and alerts">
-          <div className="panel-header">
-            <h3 style={{ margin: 0 }}>Status & Alerts</h3>
+        <aside className="session-side" aria-label="conversation and alerts">
+          <div className="side-panel">
+            <div className="section-title">Conversation log / transcript</div>
+            <TranscriptView segments={transcript} />
           </div>
-          <AlertStack alerts={alertItems} />
-          <div className="panel-header">
-            <h3 style={{ margin: 0 }}>Transcript</h3>
+          <div className="side-panel">
+            <div className="section-title">Alerts & Debug</div>
+            <AlertStack alerts={alertItems} />
+            <div className="debug-log" aria-label="debug-log">
+              {log.length === 0 ? (
+                <p style={{ margin: 0 }}>No events yet.</p>
+              ) : (
+                <ul style={{ margin: 0, paddingLeft: 16 }}>
+                  {log.map((line, idx) => (
+                    <li key={idx}>{line}</li>
+                  ))}
+                </ul>
+              )}
+            </div>
           </div>
-          <TranscriptView segments={transcript} />
-          <div className="panel-header">
-            <h3 style={{ margin: 0 }}>Debug Log</h3>
-          </div>
-          <div className="debug-log" aria-label="debug-log">
-            {log.length === 0 ? (
-              <p style={{ margin: 0 }}>No events yet.</p>
-            ) : (
-              <ul style={{ margin: 0, paddingLeft: 16 }}>
-                {log.map((line, idx) => (
-                  <li key={idx}>{line}</li>
-                ))}
-              </ul>
-            )}
-          </div>
-        </section>
+        </aside>
       </div>
     </div>
   );

@@ -55,9 +55,10 @@ export function SessionDetailPage({ sessionId, onBack }: Props) {
 
   return (
     <section className="page session-detail">
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+      <div className="page-header">
         <div>
-          <h2>Session Detail</h2>
+          <p className="eyebrow">History</p>
+          <h2>History Detail</h2>
           <div className="meta-row">
             <span>{detail ? new Date(detail.start_time).toLocaleString() : ""}</span>
             {detail?.duration_seconds ? <span>{detail.duration_seconds}s</span> : null}

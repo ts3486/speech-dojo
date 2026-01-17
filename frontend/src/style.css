@@ -69,9 +69,8 @@ a {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 12px 16px;
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
+  padding: 10px 14px;
+  background: var(--color-primary);
   border-radius: var(--radius);
   box-shadow: var(--shadow-soft);
   position: sticky;
@@ -82,7 +81,7 @@ a {
 .brand {
   font-family: "Sora", "Inter", sans-serif;
   font-weight: 700;
-  font-size: 20px;
+  font-size: 18px;
   letter-spacing: 0.01em;
 }
 
@@ -92,23 +91,24 @@ a {
 }
 
 .nav a {
-  padding: 8px 12px;
+  padding: 8px 10px;
   border-radius: var(--radius);
-  color: var(--color-text);
+  color: #1f1f1f;
+  font-weight: 600;
 }
 
 .nav a:hover {
-  background: #f0eae0;
+  background: rgba(0, 0, 0, 0.04);
 }
 
 .nav a:focus-visible {
   box-shadow: var(--focus);
-  background: #f0eae0;
+  background: rgba(0, 0, 0, 0.04);
 }
 
 .nav a[aria-current="page"] {
-  background: var(--color-primary);
-  color: #1f1f1f;
+  text-decoration: underline;
+  background: rgba(0, 0, 0, 0.06);
 }
 
 .page {
@@ -120,16 +120,19 @@ a {
   box-shadow: var(--shadow-soft);
 }
 
+.page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+}
+
 .grid-2col {
   display: grid;
   grid-template-columns: minmax(280px, 1fr) 1.4fr;
   gap: 16px;
-}
-
-.page-session .session-grid {
-  display: grid;
-  grid-template-columns: minmax(320px, 1fr) 1.4fr;
-  gap: 18px;
 }
 
 .panel {
@@ -262,12 +265,6 @@ a {
   cursor: pointer;
 }
 
-.history-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-  gap: 14px;
-}
-
 .empty-state {
   display: flex;
   align-items: center;
@@ -302,13 +299,145 @@ a {
   background: var(--color-surface);
 }
 
+.eyebrow {
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  font-size: 13px;
+  color: var(--color-muted);
+  margin: 0 0 6px;
+}
+
+.lede {
+  color: var(--color-muted);
+  max-width: 720px;
+}
+
+.home-page h1 {
+  margin-bottom: 6px;
+}
+
+.home-grid {
+  display: grid;
+  gap: 20px;
+}
+
+.topic-section {
+  display: grid;
+  gap: 12px;
+}
+
+.tile-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 12px;
+}
+
+.topic-tile {
+  background: #e6e1d6;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  min-height: 120px;
+  padding: 12px;
+  width: 100%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  font-weight: 700;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.topic-tile:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.session-layout {
+  display: grid;
+  grid-template-columns: 1.6fr 1fr;
+  gap: 16px;
+}
+
+.session-main,
+.session-side {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  padding: 16px;
+  box-shadow: var(--shadow-soft);
+}
+
+.recording-panel {
+  margin-top: 12px;
+  min-height: 260px;
+  background: #dbd7cf;
+  border: 1px dashed var(--color-border);
+  border-radius: var(--radius);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  color: var(--color-muted);
+}
+
+.session-side {
+  display: grid;
+  gap: 12px;
+}
+
+.side-panel {
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  padding: 12px;
+  background: #fff;
+  display: grid;
+  gap: 12px;
+}
+
+.section-title {
+  font-weight: 700;
+  margin: 0;
+}
+
+.history-list {
+  display: grid;
+  gap: 12px;
+}
+
+.history-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 14px 16px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  background: #fff;
+  box-shadow: var(--shadow-soft);
+}
+
+.history-row__content h3 {
+  margin: 0 0 6px 0;
+}
+
+.history-row__actions {
+  display: flex;
+  gap: 8px;
+}
+
 @media (max-width: 900px) {
   .grid-2col {
     grid-template-columns: 1fr;
   }
 
-  .page-session .session-grid {
+  .session-layout {
     grid-template-columns: 1fr;
+  }
+
+  .history-row {
+    flex-direction: column;
+    align-items: flex-start;
   }
 }
 
