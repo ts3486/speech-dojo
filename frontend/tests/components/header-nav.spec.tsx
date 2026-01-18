@@ -1,8 +1,9 @@
 import { describe, it, beforeEach, afterEach, expect, vi } from "vitest";
-import { render, screen, waitFor } from "@testing-library/react";
+import { screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import App from "../../src/App";
 import "@testing-library/jest-dom";
+import { renderWithProviders } from "../utils";
 
 function stubFetch() {
   return vi.fn().mockImplementation((input: RequestInfo | URL) => {
@@ -37,7 +38,7 @@ describe("header navigation", () => {
 
   it("sets aria-current on the active nav link", async () => {
     window.history.pushState({}, "", "/history");
-    render(<App />);
+    renderWithProviders(<App />);
     await waitFor(() =>
       expect(screen.getByRole("link", { name: /history/i })).toHaveAttribute("aria-current", "page")
     );
@@ -46,7 +47,7 @@ describe("header navigation", () => {
 
   it("keeps skip link focusable for keyboard users", async () => {
     window.history.pushState({}, "", "/session");
-    render(<App />);
+    renderWithProviders(<App />);
     const user = userEvent.setup();
     await user.tab();
     const skip = screen.getByRole("link", { name: /skip to main content/i });

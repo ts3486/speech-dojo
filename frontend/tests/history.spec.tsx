@@ -1,10 +1,11 @@
 import { describe, it, expect, vi, afterEach } from "vitest";
-import { render, screen, waitFor } from "@testing-library/react";
+import { screen, waitFor } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import { HistoryPage } from "../src/pages/history";
 import { SessionDetailPage } from "../src/pages/session-detail";
 import React from "react";
 import "@testing-library/jest-dom";
+import { renderWithProviders } from "./utils";
 
 afterEach(() => {
   vi.restoreAllMocks();
@@ -33,7 +34,7 @@ describe("history flows", () => {
     } as any);
     vi.stubGlobal("fetch", fetchMock);
 
-    render(
+    renderWithProviders(
       <MemoryRouter>
         <HistoryPage />
       </MemoryRouter>
@@ -51,7 +52,7 @@ describe("history flows", () => {
     } as any);
     vi.stubGlobal("fetch", fetchMock);
 
-    render(
+    renderWithProviders(
       <MemoryRouter>
         <HistoryPage />
       </MemoryRouter>
@@ -79,7 +80,7 @@ describe("history flows", () => {
     } as any);
     vi.stubGlobal("fetch", fetchMock);
 
-    render(
+    renderWithProviders(
       <MemoryRouter>
         <SessionDetailPage sessionId="session-2" onBack={() => {}} />
       </MemoryRouter>

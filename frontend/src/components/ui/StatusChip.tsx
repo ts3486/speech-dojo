@@ -1,17 +1,19 @@
+type Tone = "active" | "recovering" | "error" | "idle";
+
 interface Props {
   label: string;
-  tone?: "active" | "recovering" | "error" | "idle";
+  tone?: Tone;
 }
 
 export function StatusChip({ label, tone = "idle" }: Props) {
-  const toneMap: Record<Props["tone"], { bg: string; dot: string; text: string }> = {
+  const toneMap: Record<Tone, { bg: string; dot: string; text: string }> = {
     active: { bg: "bg-secondary/15", dot: "bg-secondary", text: "text-secondary" },
     recovering: { bg: "bg-primary/20", dot: "bg-primary", text: "text-primary" },
     error: { bg: "bg-danger/15", dot: "bg-danger", text: "text-danger" },
     idle: { bg: "bg-black/5", dot: "bg-muted", text: "text-muted" }
   };
 
-  const toneStyle = toneMap[tone] || toneMap.idle;
+  const toneStyle = toneMap[tone ?? "idle"];
 
   return (
     <span

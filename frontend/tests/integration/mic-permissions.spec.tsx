@@ -1,9 +1,10 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { fireEvent, screen, waitFor } from "@testing-library/react";
 import SessionPage from "../../src/pages/session";
 import { MemoryRouter } from "react-router-dom";
 import React from "react";
 import "@testing-library/jest-dom";
+import { renderWithProviders } from "../utils";
 
 const startRecorder = vi.fn();
 const stopRecorder = vi.fn();
@@ -32,31 +33,46 @@ vi.mock("../../src/services/recorder", () => ({
 }));
 
 function setupFetchMock() {
-  const fetchMock = vi
-    .fn()
-    // topics
-    .mockResolvedValueOnce({ ok: true, json: async () => ([{ id: "topic-1", title: "Topic One" }]) })
-    // create session
-    .mockResolvedValueOnce({ ok: true, json: async () => ({ id: "session-1", topic_id: "topic-1", user_id: "user" }) })
-    // mint client secret
-    .mockResolvedValueOnce({
-      ok: true,
-      json: async () => ({
-        client_secret: "secret-1",
-        expires_at: new Date(Date.now() + 60_000).toISOString(),
-        session_id: "session-1"
-      })
-    })
-    // upload
-    .mockResolvedValueOnce({ ok: true, json: async () => ({ storage_url: "http://example.com/audio.webm" }) })
-    // finalize
-    .mockResolvedValueOnce({
-      ok: true,
-      json: async () => ({
-        transcript: [{ speaker: "user", text: "mic ok" }],
-        status: "ended"
-      })
-    });
+  const fetchMock = vi.fn().mockImplementation((input: RequestInfo | URL, init?: RequestInit) => {
+    const url = String(input);
+    const method = (init?.method || "GET").toUpperCase();
+
+    if (url.includes("/api/topics") && method === "GET") {
+      return Promise.resolve({ ok: true, json: async () => [{ id: "topic-1", title: "Topic One" }] } as any);
+    }
+    if (url.endsWith("/api/sessions") && method === "POST") {
+      return Promise.resolve({
+        ok: true,
+        json: async () => ({ id: "session-1", topic_id: "topic-1", user_id: "user" })
+      } as any);
+    }
+    if (url.includes("/api/realtime/session") && method === "POST") {
+      return Promise.resolve({
+        ok: true,
+        json: async () => ({
+          client_secret: "secret-1",
+          expires_at: new Date(Date.now() + 60_000).toISOString(),
+          session_id: "session-1"
+        })
+      } as any);
+    }
+    if (url.endsWith("/upload")) {
+      return Promise.resolve({
+        ok: true,
+        json: async () => ({ storage_url: "http://example.com/audio.webm" })
+      } as any);
+    }
+    if (url.endsWith("/finalize")) {
+      return Promise.resolve({
+        ok: true,
+        json: async () => ({
+          transcript: [{ speaker: "user", text: "mic ok" }],
+          status: "ended"
+        })
+      } as any);
+    }
+    return Promise.resolve({ ok: true, json: async () => ({}) } as any);
+  });
 
   vi.stubGlobal("fetch", fetchMock);
   return fetchMock;
@@ -80,12 +96,15 @@ describe("mic permission handling", () => {
     const fetchMock = setupFetchMock();
     requestMicMock.mockResolvedValueOnce("denied").mockResolvedValueOnce("granted");
 
-    render(
+    renderWithProviders(
       <MemoryRouter>
         <SessionPage />
       </MemoryRouter>
     );
 
+    await waitFor(() =>
+      expect(screen.getByRole("option", { name: /topic one/i })).toBeInTheDocument()
+    );
     await waitFor(() => expect(fetchMock).toHaveBeenCalled());
     const select = screen.getByLabelText(/topic/i) as HTMLSelectElement;
     fireEvent.change(select, { target: { value: "topic-1" } });

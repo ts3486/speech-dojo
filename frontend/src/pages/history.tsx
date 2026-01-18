@@ -1,8 +1,9 @@
-import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { API_BASE, DEMO_USER } from "../config";
 import { StatusChip } from "../components/ui/StatusChip";
 import { Button, LinkButton } from "../components/ui/Button";
+import { fetchSessions } from "../services/api";
 
 type SessionListItem = {
   id: string;
@@ -22,33 +23,21 @@ interface Props {
 }
 
 export function HistoryPage({ onSelect }: Props) {
-  const [sessions, setSessions] = useState<SessionListItem[]>([]);
-  const [error, setError] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
 
-  async function loadHistory() {
-    setLoading(true);
-    setError(null);
-    try {
-      const res = await fetch(`${API_BASE}/api/sessions`, {
-        headers: { "x-user-id": DEMO_USER }
-      });
-      if (!res.ok) throw new Error("Failed to fetch history");
-      const data = await res.json();
-      const list = data.sessions || data || [];
-      setSessions(list);
-    } catch (err) {
-      const msg = err instanceof Error ? err.message : "History load failed";
-      setError(msg);
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  useEffect(() => {
-    loadHistory();
-  }, []);
+  const {
+    data: sessions = [],
+    isLoading: loading,
+    isError,
+    error
+  } = useQuery<SessionListItem[]>({
+    queryKey: ["sessions"],
+    queryFn: fetchSessions,
+    staleTime: 15_000,
+    refetchOnWindowFocus: false,
+    retry: false
+  });
 
   async function deleteSession(id: string) {
     const confirmed = window.confirm("Delete this session?");
@@ -58,10 +47,12 @@ export function HistoryPage({ onSelect }: Props) {
       headers: { "x-user-id": DEMO_USER }
     });
     if (!res.ok) {
-      setError("Delete failed");
+      console.error("Delete failed");
       return;
     }
-    setSessions((prev) => prev.filter((s) => s.id !== id));
+    queryClient.setQueryData<SessionListItem[] | undefined>(["sessions"], (prev) =>
+      (prev ?? []).filter((s) => s.id !== id)
+    );
   }
 
   return (
@@ -74,7 +65,7 @@ export function HistoryPage({ onSelect }: Props) {
         <Button onClick={() => navigate("/session")}>Start a session</Button>
       </div>
       {loading && <p>Loading…</p>}
-      {error && <p className="text-danger">{error}</p>}
+      {isError && <p className="text-danger">{(error as Error)?.message ?? "History load failed"}</p>}
       {!loading && sessions.length === 0 ? (
         <div className="empty-state" role="status">
           <div className="empty-illustration" aria-hidden="true" />

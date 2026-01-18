@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { useSearchParams } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
 import { createRealtimeClient } from "../services/realtime";
 import { requestMic, type MicStatus } from "../services/mic";
 import { SessionRecorder } from "../services/recorder";
@@ -9,13 +10,13 @@ import { AlertStack, type Alert } from "../components/AlertStack";
 import { StatusBar } from "../components/StatusBar";
 import { Button } from "../components/ui/Button";
 import { API_BASE, DEMO_USER } from "../config";
+import { fetchTopics } from "../services/api";
 
 type Topic = { id: string; title: string; difficulty?: string | null; prompt_hint?: string | null };
 type Session = { id: string; topic_id: string; status: string };
 
 export default function SessionPage() {
   const [searchParams] = useSearchParams();
-  const [topics, setTopics] = useState<Topic[]>([]);
   const [selected, setSelected] = useState<string>();
   const [session, setSession] = useState<Session | null>(null);
   const [status, setStatus] = useState("idle");
@@ -31,16 +32,27 @@ export default function SessionPage() {
   const recorderRef = useRef<SessionRecorder | null>(null);
   const realtimeRef = useRef<ReturnType<typeof createRealtimeClient> | null>(null);
 
+  const {
+    data: topics = [],
+    error: topicsError
+  } = useQuery<Topic[]>({
+    queryKey: ["topics"],
+    queryFn: fetchTopics,
+    staleTime: 30_000
+  });
+
   useEffect(() => {
-    fetch(`${API_BASE}/api/topics`)
-      .then((r) => r.json())
-      .then(setTopics)
-      .then(() => pushLog("Topics loaded"))
-      .catch(() => {
-        setError("Failed to load topics");
-        pushLog("Failed to load topics");
-      });
-  }, []);
+    if (topicsError) {
+      setError((topicsError as Error).message);
+      pushLog("Failed to load topics");
+    }
+  }, [topicsError]);
+
+  useEffect(() => {
+    if (topics.length > 0) {
+      pushLog("Topics loaded");
+    }
+  }, [topics]);
 
   useEffect(() => {
     const topicFromUrl = searchParams.get("topicId");
