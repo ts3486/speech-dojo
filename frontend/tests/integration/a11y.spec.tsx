@@ -1,8 +1,9 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import { render, screen } from "@testing-library/react";
+import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import App from "../../src/App";
 import "@testing-library/jest-dom";
+import { renderWithProviders } from "../utils";
 
 function stubFetch() {
   return vi.fn().mockImplementation((input: RequestInfo | URL) => {
@@ -27,7 +28,7 @@ describe("app accessibility primitives", () => {
   });
 
   it("provides skip link and focus-visible navigation", async () => {
-    render(<App />);
+    renderWithProviders(<App />);
     const user = userEvent.setup();
     await user.tab();
     const skip = screen.getByRole("link", { name: /skip to main content/i });

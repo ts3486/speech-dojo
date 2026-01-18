@@ -1,8 +1,9 @@
 import { describe, it, expect, vi, afterEach } from "vitest";
-import { render, screen, waitFor } from "@testing-library/react";
+import { screen, waitFor } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import { SessionDetailPage } from "../../src/pages/session-detail";
 import "@testing-library/jest-dom";
+import { renderWithProviders } from "../utils";
 
 afterEach(() => {
   vi.restoreAllMocks();
@@ -28,7 +29,7 @@ describe("SessionDetailPage", () => {
     } as any);
     vi.stubGlobal("fetch", fetchMock);
 
-    render(
+    renderWithProviders(
       <MemoryRouter>
         <SessionDetailPage sessionId="session-2" onBack={() => {}} />
       </MemoryRouter>

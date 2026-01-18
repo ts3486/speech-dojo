@@ -1,6 +1,7 @@
-import { useEffect, useMemo, useState } from "react";
+import { useMemo } from "react";
 import { useNavigate } from "react-router-dom";
-import { API_BASE, DEMO_USER } from "../config";
+import { useQuery } from "@tanstack/react-query";
+import { fetchTopics } from "../services/api";
 
 type Topic = { id: string; title: string; category?: string | null };
 
@@ -39,31 +40,18 @@ function TopicSection({
 }
 
 export function HomePage() {
-  const [topics, setTopics] = useState<Topic[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
 
-  useEffect(() => {
-    async function load() {
-      setLoading(true);
-      setError(null);
-      try {
-        const res = await fetch(`${API_BASE}/api/topics`, {
-          headers: { "x-user-id": DEMO_USER }
-        });
-        if (!res.ok) throw new Error("Failed to load topics");
-        const data = await res.json();
-        setTopics(data || []);
-      } catch (err) {
-        const msg = err instanceof Error ? err.message : "Failed to load topics";
-        setError(msg);
-      } finally {
-        setLoading(false);
-      }
-    }
-    load();
-  }, []);
+  const {
+    data: topics = [],
+    isLoading,
+    isError,
+    error
+  } = useQuery<Topic[]>({
+    queryKey: ["topics"],
+    queryFn: fetchTopics,
+    staleTime: 30_000
+  });
 
   const practiceTopics = useMemo(() => topics.slice(0, 3), [topics]);
   const agentTopics = useMemo(() => topics.slice(3, 6), [topics]);
@@ -77,8 +65,8 @@ export function HomePage() {
       <p className="eyebrow">Home</p>
       <h1>Practice your speech</h1>
       <p className="lede">Pick a topic to start a self-practice session or work with an agent. Your history will be saved automatically.</p>
-      {error && <p className="text-danger">{error}</p>}
-      {loading && <p>Loading topics…</p>}
+      {isError && <p className="text-danger">{(error as Error)?.message ?? "Failed to load topics"}</p>}
+      {isLoading && <p>Loading topics…</p>}
       <div className="home-grid">
         <TopicSection title="Solo" topics={practiceTopics} onSelect={handleSelect} />
         <TopicSection title="Interactive" topics={agentTopics} onSelect={handleSelect} />

@@ -1,8 +1,9 @@
 import { describe, it, beforeEach, afterEach, expect, vi } from "vitest";
-import { render, screen, waitFor } from "@testing-library/react";
+import { screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import App from "../../src/App";
 import "@testing-library/jest-dom";
+import { renderWithProviders } from "../utils";
 
 function fetchMock() {
   return vi.fn().mockImplementation((input: RequestInfo | URL) => {
@@ -38,7 +39,7 @@ describe("navigation integration", () => {
   it("navigates between Session and History routes", async () => {
     window.history.pushState({}, "", "/");
     const user = userEvent.setup();
-    render(<App />);
+    renderWithProviders(<App />);
 
     expect(
       await screen.findByRole("heading", { level: 1, name: /practice your speech/i })

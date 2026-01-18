@@ -1,10 +1,10 @@
-import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
 import { TranscriptView } from "../components/TranscriptView";
 import { StatusChip } from "../components/ui/StatusChip";
 import { Card } from "../components/ui/Card";
 import { Button } from "../components/ui/Button";
-import { API_BASE, DEMO_USER } from "../config";
+import { fetchSessionDetail } from "../services/api";
 
 type TranscriptSegment = { speaker: string; text: string };
 
@@ -26,32 +26,22 @@ interface Props {
 }
 
 export function SessionDetailPage({ sessionId, onBack }: Props) {
-  const [detail, setDetail] = useState<SessionDetail | null>(null);
-  const [error, setError] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
   const params = useParams();
   const id = sessionId || params.id || params.sessionId;
 
-  useEffect(() => {
-    async function loadDetail() {
-      setLoading(true);
-      setError(null);
-      try {
-        const res = await fetch(`${API_BASE}/api/sessions/${id}`, {
-          headers: { "x-user-id": DEMO_USER }
-        });
-        if (!res.ok) throw new Error("Failed to load session");
-        const data = await res.json();
-        setDetail(data.session || data);
-      } catch (err) {
-        const msg = err instanceof Error ? err.message : "Session load failed";
-        setError(msg);
-      } finally {
-        setLoading(false);
-      }
-    }
-    loadDetail();
-  }, [id]);
+  const {
+    data: detail,
+    isLoading: loading,
+    isError,
+    error
+  } = useQuery<SessionDetail>({
+    queryKey: ["session", id],
+    queryFn: () => fetchSessionDetail(String(id)),
+    enabled: Boolean(id),
+    staleTime: 30_000,
+    refetchOnWindowFocus: false,
+    retry: false
+  });
 
   return (
     <section className="page session-detail">
@@ -86,7 +76,7 @@ export function SessionDetailPage({ sessionId, onBack }: Props) {
       </div>
 
       {loading && <p>Loading…</p>}
-      {error && <p className="text-danger">{error}</p>}
+      {isError && <p className="text-danger">{(error as Error)?.message ?? "Failed to load session"}</p>}
       {detail && (
         <Card>
           <h3 style={{ marginTop: 0 }}>{detail.topic_title}</h3>

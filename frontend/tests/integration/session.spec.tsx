@@ -1,10 +1,11 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import { render, screen, waitFor } from "@testing-library/react";
+import { screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import SessionPage from "../../src/pages/session";
 import { MemoryRouter } from "react-router-dom";
 import React from "react";
 import "@testing-library/jest-dom";
+import { renderWithProviders } from "../utils";
 
 const startRecorder = vi.fn();
 const stopRecorder = vi.fn();
@@ -33,16 +34,23 @@ vi.mock("../../src/services/recorder", () => ({
 function setupFetchMocks() {
   const fetchMock = vi.fn().mockImplementation((input: RequestInfo | URL, init?: RequestInit) => {
     const url = String(input);
-    if (url.endsWith("/api/topics")) {
-      return Promise.resolve({ ok: true, json: async () => [{ id: "topic-1", title: "Topic One" }] } as any);
+    const method = (init?.method || "GET").toUpperCase();
+
+    if (url.includes("/api/topics") && method === "GET") {
+      return Promise.resolve({
+        ok: true,
+        json: async () => [{ id: "topic-1", title: "Topic One" }]
+      } as any);
     }
-    if (url.endsWith("/api/sessions") && init?.method === "POST") {
+
+    if (url.endsWith("/api/sessions") && method === "POST") {
       return Promise.resolve({
         ok: true,
         json: async () => ({ id: "session-1", topic_id: "topic-1", user_id: "user" })
       } as any);
     }
-    if (url.includes("/api/realtime/session")) {
+
+    if (url.includes("/api/realtime/session") && method === "POST") {
       return Promise.resolve({
         ok: true,
         json: async () => ({
@@ -52,12 +60,14 @@ function setupFetchMocks() {
         })
       } as any);
     }
+
     if (url.endsWith("/upload")) {
       return Promise.resolve({
         ok: true,
         json: async () => ({ storage_url: "http://example.com/audio.webm" })
       } as any);
     }
+
     if (url.endsWith("/finalize")) {
       return Promise.resolve({
         ok: true,
@@ -67,6 +77,7 @@ function setupFetchMocks() {
         })
       } as any);
     }
+
     return Promise.resolve({ ok: true, json: async () => ({}) } as any);
   });
 
@@ -91,7 +102,7 @@ describe("session flow", () => {
   it("starts and ends a session, showing transcript", async () => {
     const fetchMock = setupFetchMocks();
 
-    render(
+    renderWithProviders(
       <MemoryRouter>
         <SessionPage />
       </MemoryRouter>
@@ -99,6 +110,9 @@ describe("session flow", () => {
 
     await waitFor(() => expect(fetchMock).toHaveBeenCalled());
     const select = screen.getByLabelText(/topic/i) as HTMLSelectElement;
+    await waitFor(() =>
+      expect(screen.getByRole("option", { name: /topic one/i })).toBeInTheDocument()
+    );
     await userEvent.selectOptions(select, "topic-1");
 
     await userEvent.click(screen.getByRole("button", { name: /start session/i }));
