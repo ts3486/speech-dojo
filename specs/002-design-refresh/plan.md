@@ -64,7 +64,7 @@ frontend/
 │   ├── components/
 │   ├── pages/
 │   ├── services/
-│   └── style.css / theme tokens
+│   └── index.css / Tailwind base + theme tokens
 └── tests/
 ```
 

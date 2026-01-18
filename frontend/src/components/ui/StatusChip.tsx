@@ -4,39 +4,21 @@ interface Props {
 }
 
 export function StatusChip({ label, tone = "idle" }: Props) {
-  const toneMap: Record<Props["tone"], { bg: string; color: string }> = {
-    active: { bg: "rgba(42,157,143,0.15)", color: "var(--color-secondary)" },
-    recovering: { bg: "rgba(244,162,97,0.2)", color: "var(--color-primary)" },
-    error: { bg: "rgba(196,69,54,0.15)", color: "var(--color-danger)" },
-    idle: { bg: "rgba(0,0,0,0.05)", color: "var(--color-muted)" },
+  const toneMap: Record<Props["tone"], { bg: string; dot: string; text: string }> = {
+    active: { bg: "bg-secondary/15", dot: "bg-secondary", text: "text-secondary" },
+    recovering: { bg: "bg-primary/20", dot: "bg-primary", text: "text-primary" },
+    error: { bg: "bg-danger/15", dot: "bg-danger", text: "text-danger" },
+    idle: { bg: "bg-black/5", dot: "bg-muted", text: "text-muted" }
   };
 
   const toneStyle = toneMap[tone] || toneMap.idle;
 
   return (
     <span
-      style={{
-        padding: "6px 10px",
-        borderRadius: "999px",
-        fontWeight: 600,
-        fontSize: "12px",
-        background: toneStyle.bg,
-        color: toneStyle.color,
-        display: "inline-flex",
-        alignItems: "center",
-        gap: "6px",
-      }}
+      className={`inline-flex items-center gap-2 px-2.5 py-1 rounded-full text-xs font-semibold ${toneStyle.bg} ${toneStyle.text}`}
       aria-label={`Status: ${label}`}
     >
-      <span
-        style={{
-          width: 8,
-          height: 8,
-          borderRadius: "50%",
-          background: toneStyle.color,
-          display: "inline-block",
-        }}
-      />
+      <span className={`w-2 h-2 rounded-full inline-block ${toneStyle.dot}`} />
       {label}
     </span>
   );

@@ -1,6 +1,7 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import SessionPage from "../../src/pages/session";
+import { MemoryRouter } from "react-router-dom";
 import React from "react";
 import "@testing-library/jest-dom";
 
@@ -79,10 +80,14 @@ describe("mic permission handling", () => {
     const fetchMock = setupFetchMock();
     requestMicMock.mockResolvedValueOnce("denied").mockResolvedValueOnce("granted");
 
-    render(<SessionPage />);
+    render(
+      <MemoryRouter>
+        <SessionPage />
+      </MemoryRouter>
+    );
 
     await waitFor(() => expect(fetchMock).toHaveBeenCalled());
-    const select = screen.getByLabelText(/Topic:/i) as HTMLSelectElement;
+    const select = screen.getByLabelText(/topic/i) as HTMLSelectElement;
     fireEvent.change(select, { target: { value: "topic-1" } });
 
     fireEvent.click(screen.getByText(/Start Session/));

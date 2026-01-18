@@ -20,8 +20,8 @@ describe("UI Kit tokens", () => {
       </MemoryRouter>
     );
 
-    expect(screen.getByText("Primary")).toHaveAttribute("data-variant", "primary");
-    expect(screen.getByText("Link")).toHaveAttribute("data-variant", "secondary");
+    expect(screen.getByText("Primary")).toHaveClass("bg-primary");
+    expect(screen.getByText("Link")).toHaveClass("border");
     expect(screen.getByText(/Active/)).toBeInTheDocument();
   });
 

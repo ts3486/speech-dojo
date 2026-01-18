@@ -40,7 +40,9 @@ describe("navigation integration", () => {
     const user = userEvent.setup();
     render(<App />);
 
-    expect(await screen.findByRole("heading", { name: /practice your speech/i })).toBeInTheDocument();
+    expect(
+      await screen.findByRole("heading", { level: 1, name: /practice your speech/i })
+    ).toBeInTheDocument();
 
     await user.click(screen.getByRole("link", { name: /^session$/i }));
     await waitFor(() =>
@@ -55,7 +57,9 @@ describe("navigation integration", () => {
     // back to home
     await user.click(screen.getByRole("link", { name: /^home$/i }));
     await waitFor(() =>
-      expect(screen.getByRole("heading", { name: /practice your speech/i })).toBeInTheDocument()
+      expect(
+        screen.getByRole("heading", { level: 1, name: /practice your speech/i })
+      ).toBeInTheDocument()
     );
   });
 });

@@ -373,7 +373,7 @@ export default function SessionPage() {
             <span>Mic: {micStatus}</span>
           </div>
           {error && (
-            <p role="status" style={{ color: "var(--color-danger)", margin: 0 }}>
+            <p role="status" className="text-danger m-0">
               {error}
             </p>
           )}

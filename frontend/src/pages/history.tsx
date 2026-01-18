@@ -74,7 +74,7 @@ export function HistoryPage({ onSelect }: Props) {
         <Button onClick={() => navigate("/session")}>Start a session</Button>
       </div>
       {loading && <p>Loading…</p>}
-      {error && <p style={{ color: "var(--color-danger)" }}>{error}</p>}
+      {error && <p className="text-danger">{error}</p>}
       {!loading && sessions.length === 0 ? (
         <div className="empty-state" role="status">
           <div className="empty-illustration" aria-hidden="true" />

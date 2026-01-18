@@ -11,7 +11,7 @@ export function TranscriptView({ segments }: Props) {
       {segments.map((s, idx) => (
         <li key={idx}>
           <span className="pill">
-            <span style={{ width: 8, height: 8, borderRadius: "50%", background: "var(--color-secondary)" }} />
+            <span className="pill-dot" />
             {s.speaker}
             {s.timestamp ? ` • ${s.timestamp}` : ""}
           </span>

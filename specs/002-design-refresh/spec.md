@@ -3,17 +3,17 @@
 **Feature Branch**: `002-design-refresh`  
 **Created**: 2026-01-14  
 **Status**: Draft  
-**Scope**: Whole-product UI/UX refresh for Speech Dojo, covering shell/navigation, realtime session surfaces, history/detail, and shared design system.
+**Scope**: Whole-product UI/UX refresh for Speech Dojo, covering shell/navigation, realtime session surfaces, history/detail, and shared design system with a warm, supportive theme (soft orange actions on calm neutrals) implemented via Tailwind (tokens in `tailwind.config.cjs` + base layers).
 
 **Constitution Hooks**: Preserve privacy (no frontend secrets; private-by-default sessions; delete/export), realtime resilience (WebRTC path, mic/network/token recovery), reliability (idempotent session finalization and transcript/audio retention), architecture boundaries (frontend owns UX/audio/WebRTC; backend owns auth/persistence/uploads/OpenAI), testing discipline, and PII-safe observability. Accessibility (AA+ contrast, focus-visible) is elevated as a first-class constraint for the redesign.
 
 ## Design Direction (UI)
 
-- **Theme**: Calm coaching; warm neutral base (#f8f6f1), deep charcoal text (#1f1f1f), amber primary (#f4a261, hover #e48f3e), teal secondary (#2a9d8f), danger (#c44536), subtle surfaces (#fffaf2), borders (#d8d3c8).
-- **Typography**: Headings = Sora (700/600); Body = Inter (400/500). Base 16px; H1 28px, H2 22px, H3 18px; line-height 1.35/1.55.
-- **Layout**: Max width 1100px, 24px gutters; 8px radius; soft shadow; focus ring 2px teal. Responsive breakpoints 640/900/1200; stack columns on mobile.
-- **Interaction**: Inline alerts with actionable retries (network/mic/token), persistent status bar for session health, accessible audio controls, skip-to-main, `:focus-visible` everywhere. Motion is subtle (150–200ms fade/slide), no heavy animations.
-- **Token source**: CSS variables and typography definitions live in `frontend/src/style.css`; UI kit hover/focus styles are injected via `frontend/src/components/ui/Button.tsx` (`ButtonStyles`). See `specs/002-design-refresh/design.md` for usage guidance.
+- **Theme**: Warm, encouraging, and low-anxiety. Base #FFFBF7, surfaces #FFFFFF, surfaceAlt #FFF2E6, borders #E7E2DA. Primary actions in soft orange #FB923C (hover #F97316, active #EA580C), highlights #FED7AA. Accent teal #0F766E (links/secondary), accentSoft #99F6E4. Success #22C55E / #DCFCE7, warning #F59E0B / #FEF3C7, error #EF4444 / #FEE2E2. Text primary #1F2937, secondary #6B7280, muted #9CA3AF; text on primary #FFFFFF.
+- **Typography**: Headings = Sora (700/600); Body = Manrope (500/400). Base 16px; H1 30px, H2 24px, H3 18px; line-height 1.35/1.6.
+- **Layout**: Max width ~1100px for content; generous padding; 12px radius; soft shadow `0 16px 40px rgba(0,0,0,0.12)`; responsive breakpoints 640/900/1200; stack columns on mobile.
+- **Interaction**: Inline alerts with actionable retries (network/mic/token), persistent status bar, accessible audio controls, skip-to-main, `:focus-visible` ring in primaryHover at ~40% opacity. Motion is gentle (150–220ms fade/slide), light lifts on tiles/buttons; avoid bouncy/overstated animations.
+- **Token source**: Tailwind theme tokens live in `frontend/tailwind.config.cjs`; base/global layers in `frontend/src/index.css` (fonts, background, skip-link, utility classes). Components consume Tailwind utilities (no custom CSS variables).
 
 ## Wireframe Fit (Home → Session → History → Detail)
 

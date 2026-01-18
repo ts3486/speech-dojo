@@ -15,16 +15,7 @@ export function StatusBar({ status }: Props) {
   return (
     <div
       aria-label="session status"
-      style={{
-        display: "flex",
-        alignItems: "center",
-        gap: 12,
-        padding: "10px 12px",
-        border: "1px solid var(--color-border)",
-        borderRadius: "var(--radius)",
-        background: "var(--color-surface)",
-        boxShadow: "var(--shadow-soft)",
-      }}
+      className="flex items-center gap-3 px-3 py-2 border border-border rounded-[12px] bg-surface shadow-soft"
     >
       <StatusChip
         label={`Connection: ${status.connection}`}
@@ -61,9 +52,7 @@ export function StatusBar({ status }: Props) {
         }
       />
       {status.info && (
-        <span style={{ color: "var(--color-muted)", fontSize: 14 }}>
-          {status.info}
-        </span>
+        <span className="text-sm text-muted">{status.info}</span>
       )}
     </div>
   );

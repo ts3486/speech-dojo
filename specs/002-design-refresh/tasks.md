@@ -18,9 +18,9 @@ description: "Task list for Speech Dojo product-wide design refresh"
 
 **Purpose**: Establish base theme assets and entry shell for the redesign.
 
-- [X] T001 Add Sora/Inter font imports and design token CSS variables (colors/radius/shadow/focus) in `frontend/src/style.css`
-- [X] T002 Wire theme tokens into Tailwind/Vite config (if used) in `frontend/tailwind.config.*` or `frontend/src/style.css`
-- [X] T003 Add skip-to-main anchor and base layout container (max-width/gutters) in `frontend/src/main.tsx` and `frontend/src/style.css`
+- [X] T001 Add Sora/Inter font imports and design token CSS variables (colors/radius/shadow/focus) in `frontend/src/style.css` **(updated: Tailwind tokens in `frontend/tailwind.config.cjs` + base in `frontend/src/index.css`)**
+- [X] T002 Wire theme tokens into Tailwind/Vite config (if used) in `frontend/tailwind.config.*` or `frontend/src/style.css` **(using Tailwind config in `frontend/tailwind.config.cjs`)**
+- [X] T003 Add skip-to-main anchor and base layout container (max-width/gutters) in `frontend/src/main.tsx` and `frontend/src/style.css` **(base now in `frontend/src/index.css`)**
 - [X] T004 Document token usage references in `specs/002-design-refresh/spec.md` and `specs/002-design-refresh/design.md` (link to CSS variables)
 
 ---
@@ -33,7 +33,7 @@ description: "Task list for Speech Dojo product-wide design refresh"
 - [X] T006 [P] Create StatusChip and Card components with variants (active/recovering/error) in `frontend/src/components/ui/StatusChip.tsx` and `frontend/src/components/ui/Card.tsx`
 - [X] T007 [P] Implement AlertStack with role/ARIA and inline actions in `frontend/src/components/AlertStack.tsx`
 - [X] T008 Implement StatusBar component for connection/mic/token states in `frontend/src/components/StatusBar.tsx`
-- [X] T009 Add global accessibility utilities (`:focus-visible`, skip link styles, base typography) in `frontend/src/style.css`
+- [X] T009 Add global accessibility utilities (`:focus-visible`, skip link styles, base typography) in `frontend/src/style.css` **(now in `frontend/src/index.css` via Tailwind base/components)**
 
 **Checkpoint**: Foundation ready - user story work can proceed.
 
@@ -53,7 +53,7 @@ description: "Task list for Speech Dojo product-wide design refresh"
 ### Implementation for User Story 1
 
 - [X] T012 [US1] Build styled header/nav with brand and links in `frontend/src/main.tsx` (or layout component)
-- [X] T013 [P] [US1] Apply responsive shell layout (max width, gutters, sticky header) in `frontend/src/style.css`
+- [X] T013 [P] [US1] Apply responsive shell layout (max width, gutters, sticky header) in `frontend/src/style.css` **(now Tailwind base/utilities)**
 - [X] T014 [US1] Ensure focus-visible states and aria-current on active nav links in `frontend/src/main.tsx`
 
 **Checkpoint**: US1 shell accessible and themed.
@@ -73,7 +73,7 @@ description: "Task list for Speech Dojo product-wide design refresh"
 
 ### Implementation for User Story 2
 
-- [X] T017 [US2] Apply two-column responsive layout to session page in `frontend/src/pages/session.tsx` and `frontend/src/style.css`
+- [X] T017 [US2] Apply two-column responsive layout to session page in `frontend/src/pages/session.tsx` and `frontend/src/style.css` **(layout via Tailwind classes/base)** 
 - [X] T018 [P] [US2] Integrate StatusBar with mic/network/token states in `frontend/src/pages/session.tsx`
 - [X] T019 [P] [US2] Style AlertStack inline actions (retry/end) in `frontend/src/components/AlertStack.tsx`
 - [X] T020 [US2] Style Start/End controls, timer, topic picker, and debug log per tokens in `frontend/src/pages/session.tsx`
@@ -119,7 +119,7 @@ description: "Task list for Speech Dojo product-wide design refresh"
 
 ### Implementation for User Story 4
 
-- [X] T031 [US4] Verify token consumption across components (no hard-coded colors/spacing) in `frontend/src/components/**` and `frontend/src/style.css`
+- [X] T031 [US4] Verify token consumption across components (no hard-coded colors/spacing) in `frontend/src/components/**` and `frontend/src/style.css` **(now Tailwind theme + utilities)**
 - [X] T032 [P] [US4] Add skip-to-main and focus-visible handling to all page templates in `frontend/src/pages/*.tsx`
 - [X] T033 [US4] Document accessibility and token usage in `specs/002-design-refresh/design.md` and `quickstart.md`
 
@@ -129,7 +129,7 @@ description: "Task list for Speech Dojo product-wide design refresh"
 
 ## Phase N: Polish & Cross-Cutting Concerns
 
-- [ ] T034 [P] Run AA contrast sweep and fix violations in `frontend/src/style.css`
+- [ ] T034 [P] Run AA contrast sweep and fix violations in `frontend/src/index.css` (Tailwind base)
 - [ ] T035 [P] Capture updated screenshots/visual notes in `specs/002-design-refresh/design.md`
 - [ ] T036 Validate quickstart instructions end-to-end (dev server + tests) in `specs/002-design-refresh/quickstart.md`
 - [ ] T037 Final regression: `pnpm test` (frontend) and `cargo test` (backend) with results noted in `specs/002-design-refresh/tasks.md`

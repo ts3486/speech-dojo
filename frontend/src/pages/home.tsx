@@ -77,11 +77,11 @@ export function HomePage() {
       <p className="eyebrow">Home</p>
       <h1>Practice your speech</h1>
       <p className="lede">Pick a topic to start a self-practice session or work with an agent. Your history will be saved automatically.</p>
-      {error && <p style={{ color: "var(--color-danger)" }}>{error}</p>}
+      {error && <p className="text-danger">{error}</p>}
       {loading && <p>Loading topics…</p>}
       <div className="home-grid">
-        <TopicSection title="Practice your speech" topics={practiceTopics} onSelect={handleSelect} />
-        <TopicSection title="Practice with an agent" topics={agentTopics} onSelect={handleSelect} />
+        <TopicSection title="Solo" topics={practiceTopics} onSelect={handleSelect} />
+        <TopicSection title="Interactive" topics={agentTopics} onSelect={handleSelect} />
       </div>
     </div>
   );

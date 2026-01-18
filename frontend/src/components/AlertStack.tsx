@@ -19,11 +19,11 @@ interface Props {
 }
 
 const toneStyles: Record<AlertTone, { bg: string; border: string }> = {
-  network: { bg: "#fff7ed", border: "var(--color-primary)" },
-  mic: { bg: "#fff7ed", border: "var(--color-primary)" },
-  token: { bg: "#fff7ed", border: "var(--color-primary)" },
-  info: { bg: "#f0f6ff", border: "#5b8def" },
-  error: { bg: "#fff0ed", border: "var(--color-danger)" },
+  network: { bg: "bg-[#fff7ed]", border: "border-primary" },
+  mic: { bg: "bg-[#fff7ed]", border: "border-primary" },
+  token: { bg: "bg-[#fff7ed]", border: "border-primary" },
+  info: { bg: "bg-[#f0f6ff]", border: "border-[#5b8def]" },
+  error: { bg: "bg-[#fff0ed]", border: "border-danger" },
 };
 
 export function AlertStack({ alerts }: Props) {
@@ -37,8 +37,7 @@ export function AlertStack({ alerts }: Props) {
           <div
             key={alert.id}
             role="alert"
-            className="alert-card"
-            style={{ border: `1px solid ${tone.border}`, background: tone.bg }}
+            className={`alert-card ${tone.bg} ${tone.border}`}
           >
             <p className="alert-card__title">{alert.message}</p>
             {alert.actions && alert.actions.length > 0 && (
@@ -48,7 +47,7 @@ export function AlertStack({ alerts }: Props) {
                     key={idx}
                     type="button"
                     onClick={action.onClick}
-                    style={{ border: `1px solid ${tone.border}` }}
+                    className={`border rounded-[12px] px-2.5 py-2 text-sm ${tone.border}`}
                   >
                     {action.label}
                   </button>

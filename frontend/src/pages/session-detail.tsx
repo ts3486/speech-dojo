@@ -86,7 +86,7 @@ export function SessionDetailPage({ sessionId, onBack }: Props) {
       </div>
 
       {loading && <p>Loading…</p>}
-      {error && <p style={{ color: "var(--color-danger)" }}>{error}</p>}
+      {error && <p className="text-danger">{error}</p>}
       {detail && (
         <Card>
           <h3 style={{ marginTop: 0 }}>{detail.topic_title}</h3>
