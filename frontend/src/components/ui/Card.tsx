@@ -4,32 +4,16 @@ interface Props {
   children: ReactNode;
   title?: string;
   actions?: ReactNode;
+  className?: string;
 }
 
-export function Card({ children, title, actions }: Props) {
+export function Card({ children, title, actions, className }: Props) {
   return (
-    <div
-      style={{
-        background: "var(--color-surface)",
-        border: "1px solid var(--color-border)",
-        borderRadius: "var(--radius)",
-        padding: "20px",
-        boxShadow: "var(--shadow-soft)",
-      }}
-    >
+    <div className={`bg-surfaceAlt border border-border rounded-[12px] p-5 shadow-soft ${className ?? ""}`}>
       {(title || actions) && (
-        <header
-          style={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-            marginBottom: 12,
-          }}
-        >
-          {title && (
-            <h3 style={{ margin: 0, fontSize: 18, fontWeight: 700 }}>{title}</h3>
-          )}
-          {actions && <div style={{ display: "flex", gap: 8 }}>{actions}</div>}
+        <header className="flex items-center justify-between mb-3">
+          {title && <h3 className="m-0 text-lg font-bold">{title}</h3>}
+          {actions && <div className="flex gap-2">{actions}</div>}
         </header>
       )}
       {children}

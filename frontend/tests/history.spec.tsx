@@ -40,7 +40,7 @@ describe("history flows", () => {
     );
 
     await waitFor(() => expect(screen.getByText(/Topic One/)).toBeInTheDocument());
-    expect(screen.getByText(/Session History/i)).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: /^history$/i })).toBeInTheDocument();
     expect(screen.getByText(/ended/i)).toBeInTheDocument();
   });
 

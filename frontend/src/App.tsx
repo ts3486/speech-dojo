@@ -2,44 +2,29 @@ import { BrowserRouter, Routes, Route, Link, useLocation } from "react-router-do
 import SessionPage from "./pages/session";
 import { HistoryPage } from "./pages/history";
 import { SessionDetailPage } from "./pages/session-detail";
-import { ButtonStyles } from "./components/ui/Button";
+import { HomePage } from "./pages/home";
 
 function Shell() {
   const location = useLocation();
+  const path = location.pathname;
+  const isSession = path === "/session";
+  const isHistory = path === "/history" || path.startsWith("/sessions");
 
   return (
-    <>
-      <header className="app-header">
-        <div className="brand">Speech Dojo</div>
-        <nav className="nav" aria-label="Primary">
-          <Link
-            to="/session"
-            aria-current={
-              location.pathname === "/session" || location.pathname === "/"
-                ? "page"
-                : undefined
-            }
-          >
-            Session
-          </Link>
-          <Link
-            to="/history"
-            aria-current={location.pathname === "/history" ? "page" : undefined}
-          >
-            History
-          </Link>
-        </nav>
-      </header>
-
-      <main id="main" className="page" role="main">
-        <Routes>
-          <Route path="/" element={<SessionPage />} />
-          <Route path="/session" element={<SessionPage />} />
-          <Route path="/history" element={<HistoryPage />} />
-          <Route path="/sessions/:id" element={<SessionDetailPage />} />
-        </Routes>
-      </main>
-    </>
+    <header className="app-header">
+      <div className="brand">Speech Dojo</div>
+      <nav className="nav" aria-label="Primary">
+        <Link to="/" aria-current={path === "/" ? "page" : undefined}>
+          Home
+        </Link>
+        <Link to="/session" aria-current={isSession ? "page" : undefined}>
+          Session
+        </Link>
+        <Link to="/history" aria-current={isHistory ? "page" : undefined}>
+          History
+        </Link>
+      </nav>
+    </header>
   );
 }
 
@@ -49,10 +34,19 @@ function App() {
       <a href="#main" className="skip-link">
         Skip to main content
       </a>
-      <div className="app-shell">
+      <div className="app-header-wrapper">
         <Shell />
       </div>
-      <ButtonStyles />
+      <div className="app-shell">
+        <main id="main" role="main">
+          <Routes>
+            <Route path="/" element={<HomePage />} />
+            <Route path="/session" element={<SessionPage />} />
+            <Route path="/history" element={<HistoryPage />} />
+            <Route path="/sessions/:id" element={<SessionDetailPage />} />
+          </Routes>
+        </main>
+      </div>
     </BrowserRouter>
   );
 }

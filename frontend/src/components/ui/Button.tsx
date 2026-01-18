@@ -1,4 +1,4 @@
-import { CSSProperties, ReactNode } from "react";
+import { ReactNode } from "react";
 import { Link } from "react-router-dom";
 
 type Variant = "primary" | "secondary" | "danger" | "ghost";
@@ -19,48 +19,19 @@ interface LinkButtonProps extends BaseProps {
   to: string;
 }
 
-const baseStyle = (variant: Variant, disabled?: boolean): CSSProperties => {
-  const background =
-    variant === "primary"
-      ? "var(--color-primary)"
-      : variant === "danger"
-      ? "var(--color-danger)"
-      : "transparent";
-  const color =
-    variant === "primary"
-      ? "#1f1f1f"
-      : variant === "danger"
-      ? "#fff"
-      : "var(--color-text)";
-  const border =
-    variant === "primary"
-      ? "1px solid var(--color-primary)"
-      : variant === "danger"
-      ? "1px solid var(--color-danger)"
-      : "1px solid var(--color-border)";
-
-  return {
-    background,
-    color,
-    border,
-    padding: "10px 14px",
-    borderRadius: "var(--radius)",
-    fontWeight: 600,
-    transition: "background 150ms ease, transform 150ms ease",
-    textDecoration: "none",
-    display: "inline-flex",
-    alignItems: "center",
-    gap: "8px",
-    cursor: disabled ? "not-allowed" : "pointer",
-    opacity: disabled ? 0.6 : 1,
-  };
+const variantClasses: Record<Variant, string> = {
+  primary:
+    "bg-primary text-white border border-primary hover:bg-primaryHover hover:-translate-y-[1px]",
+  secondary:
+    "bg-white text-text border border-border hover:bg-black/5 hover:-translate-y-[1px]",
+  danger:
+    "bg-danger text-white border border-danger hover:bg-[#d23b3b] hover:-translate-y-[1px]",
+  ghost:
+    "bg-transparent text-text border border-transparent hover:bg-black/5 hover:-translate-y-[1px]"
 };
 
-const hoverBackground = (variant: Variant) => {
-  if (variant === "primary") return "var(--color-primary-hover)";
-  if (variant === "danger") return "#a8372c";
-  return "rgba(0,0,0,0.04)";
-};
+const baseClasses =
+  "inline-flex items-center gap-2 rounded-[12px] px-4 py-2 font-semibold transition duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-secondary/60 disabled:opacity-60 disabled:cursor-not-allowed";
 
 export function Button({ children, variant = "primary", disabled, className, onClick, type = "button" }: ButtonProps) {
   return (
@@ -68,9 +39,7 @@ export function Button({ children, variant = "primary", disabled, className, onC
       type={type}
       onClick={onClick}
       disabled={disabled}
-      style={baseStyle(variant, disabled)}
-      className={`ui-btn ${className ?? ""}`.trim()}
-      data-variant={variant}
+      className={`${baseClasses} ${variantClasses[variant]} ${className ?? ""}`.trim()}
     >
       {children}
     </button>
@@ -82,44 +51,9 @@ export function LinkButton({ children, to, variant = "secondary", disabled, clas
     <Link
       to={disabled ? "#" : to}
       aria-disabled={disabled}
-      className={`ui-link-button ${className ?? ""}`.trim()}
-      data-variant={variant}
-      style={baseStyle(variant, disabled)}
+      className={`${baseClasses} ${variantClasses[variant]} ${className ?? ""}`.trim()}
     >
       {children}
     </Link>
   );
-}
-
-// Component-scoped hover/focus styles
-const styleSheet = `
-.ui-btn:hover:not(:disabled),
-.ui-link-button:hover {
-  background: var(--hover-bg, rgba(0,0,0,0.04));
-  transform: translateY(-1px);
-}
-
-.ui-btn:focus-visible,
-.ui-link-button:focus-visible {
-  box-shadow: var(--focus);
-}
-
-.ui-btn[data-variant="primary"],
-.ui-link-button[data-variant="primary"] {
-  --hover-bg: var(--color-primary-hover);
-}
-.ui-btn[data-variant="danger"],
-.ui-link-button[data-variant="danger"] {
-  --hover-bg: #a8372c;
-}
-.ui-btn[data-variant="secondary"],
-.ui-link-button[data-variant="secondary"],
-.ui-btn[data-variant="ghost"],
-.ui-link-button[data-variant="ghost"] {
-  --hover-bg: rgba(0,0,0,0.04);
-}
-`;
-
-export function ButtonStyles() {
-  return <style>{styleSheet}</style>;
 }

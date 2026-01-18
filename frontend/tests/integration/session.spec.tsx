@@ -2,6 +2,7 @@ import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import SessionPage from "../../src/pages/session";
+import { MemoryRouter } from "react-router-dom";
 import React from "react";
 import "@testing-library/jest-dom";
 
@@ -90,10 +91,14 @@ describe("session flow", () => {
   it("starts and ends a session, showing transcript", async () => {
     const fetchMock = setupFetchMocks();
 
-    render(<SessionPage />);
+    render(
+      <MemoryRouter>
+        <SessionPage />
+      </MemoryRouter>
+    );
 
     await waitFor(() => expect(fetchMock).toHaveBeenCalled());
-    const select = screen.getByLabelText(/topic picker/i) as HTMLSelectElement;
+    const select = screen.getByLabelText(/topic/i) as HTMLSelectElement;
     await userEvent.selectOptions(select, "topic-1");
 
     await userEvent.click(screen.getByRole("button", { name: /start session/i }));
