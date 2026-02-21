@@ -8,16 +8,24 @@ import { TranscriptView } from "../components/TranscriptView";
 import { type SessionAlert } from "../components/SessionAlerts";
 import { AlertStack, type Alert } from "../components/AlertStack";
 import { StatusBar } from "../components/StatusBar";
-import { Button } from "../components/ui/Button";
 import { API_BASE, DEMO_USER } from "../config";
 import { fetchTopics } from "../services/api";
 
-type Topic = { id: string; title: string; difficulty?: string | null; prompt_hint?: string | null };
+type Topic = {
+  id: string;
+  title: string;
+  difficulty?: string | null;
+  prompt_hint?: string | null;
+  category?: string | null;
+  system_prompt?: string | null;
+};
 type Session = { id: string; topic_id: string; status: string };
 
 export default function SessionPage() {
   const [searchParams] = useSearchParams();
   const [selected, setSelected] = useState<string>();
+  const [mode, setMode] = useState<"solo" | "interactive">("solo");
+  const [systemPrompt, setSystemPrompt] = useState<string | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [status, setStatus] = useState("idle");
   const [transcript, setTranscript] = useState<{ speaker: string; text: string }[]>([]);
@@ -55,7 +63,15 @@ export default function SessionPage() {
   }, [topics]);
 
   useEffect(() => {
+    pushLog(`Session mode: ${mode}`);
+  }, [mode]);
+
+  useEffect(() => {
     const topicFromUrl = searchParams.get("topicId");
+    const modeFromUrl = searchParams.get("mode");
+    const promptFromUrl = searchParams.get("systemPrompt");
+    if (modeFromUrl === "interactive") setMode("interactive");
+    if (promptFromUrl) setSystemPrompt(promptFromUrl);
     if (topicFromUrl && topics.length > 0 && !selected) {
       const exists = topics.some((t) => t.id === topicFromUrl);
       if (exists) {
@@ -339,18 +355,6 @@ export default function SessionPage() {
           <p className="eyebrow">Session</p>
           <h2>Topic: {topicDisplay}</h2>
         </div>
-        <div className="actions-inline">
-          <Button onClick={startSession} disabled={status === "listening" || status === "connecting"}>
-            Start Session
-          </Button>
-          <Button
-            variant="secondary"
-            onClick={endSession}
-            disabled={!session || status === "ended" || !recorderReady}
-          >
-            End Session
-          </Button>
-        </div>
       </div>
 
       <div className="session-layout">
@@ -391,7 +395,40 @@ export default function SessionPage() {
           )}
 
           <div className="recording-panel" aria-label="speech recording display">
-            <span>Speech recording display</span>
+            <div className="flex flex-col items-center gap-4">
+              {status === "listening" ? (
+                <button
+                  type="button"
+                  onClick={endSession}
+                  disabled={!session || !recorderReady}
+                  aria-label="Stop session"
+                  className="w-20 h-20 rounded-full bg-secondary text-white flex items-center justify-center shadow-soft hover:opacity-90 active:scale-95 transition-all duration-150 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                    <rect x="4" y="4" width="16" height="16" rx="3" fill="currentColor" />
+                  </svg>
+                </button>
+              ) : (
+                <button
+                  type="button"
+                  onClick={startSession}
+                  disabled={status === "connecting" || status === "ending"}
+                  aria-label="Start session"
+                  className={`w-20 h-20 rounded-full bg-primary text-white flex items-center justify-center shadow-soft hover:bg-primaryHover active:scale-95 transition-all duration-150 disabled:opacity-50 disabled:cursor-not-allowed${status === "connecting" ? " animate-pulse" : ""}`}
+                >
+                  <svg width="28" height="28" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                    <path d="M6 4.5L19 12L6 19.5V4.5Z" fill="currentColor" />
+                  </svg>
+                </button>
+              )}
+              <span className="text-sm font-medium text-muted">
+                {status === "listening"
+                  ? "Tap to stop"
+                  : status === "connecting" || status === "ending"
+                  ? "Please wait…"
+                  : "Tap to start"}
+              </span>
+            </div>
           </div>
         </section>
 

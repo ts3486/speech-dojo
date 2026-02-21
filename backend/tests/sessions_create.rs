@@ -27,17 +27,21 @@ async fn insert_topic(pool: &PgPool) -> Uuid {
         title: format!("Test Topic {}", Uuid::new_v4()),
         difficulty: Some("easy".into()),
         prompt_hint: Some("hint".into()),
+        category: None,
+        system_prompt: None,
     };
     sqlx::query(
         r#"
-        INSERT INTO topics (title, difficulty, prompt_hint)
-        VALUES ($1, $2, $3)
+        INSERT INTO topics (title, difficulty, prompt_hint, category, system_prompt)
+        VALUES ($1, $2, $3, $4, $5)
         RETURNING id
         "#,
     )
     .bind(&topic.title)
     .bind(&topic.difficulty)
     .bind(&topic.prompt_hint)
+    .bind(&topic.category)
+    .bind(&topic.system_prompt)
     .fetch_one(pool)
     .await
     .unwrap()

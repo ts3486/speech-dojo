@@ -3,7 +3,13 @@ import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { fetchTopics } from "../services/api";
 
-type Topic = { id: string; title: string; category?: string | null };
+type Topic = {
+  id: string;
+  title: string;
+  category?: string | null;
+  system_prompt?: string | null;
+  difficulty?: string | null;
+};
 
 function TopicSection({
   title,
@@ -53,11 +59,17 @@ export function HomePage() {
     staleTime: 30_000
   });
 
-  const practiceTopics = useMemo(() => topics.slice(0, 3), [topics]);
-  const agentTopics = useMemo(() => topics.slice(3, 6), [topics]);
+  const practiceTopics = useMemo(() => topics.filter(t => t.category === "solo"), [topics]);
+  const agentTopics = useMemo(() => topics.filter(t => t.category === "interactive"), [topics]);
 
   function handleSelect(topic: Topic) {
-    navigate(`/session?topicId=${encodeURIComponent(topic.id)}&topicTitle=${encodeURIComponent(topic.title)}`);
+    const params = new URLSearchParams({
+      topicId: topic.id,
+      topicTitle: topic.title,
+      mode: topic.category === "interactive" ? "interactive" : "solo",
+      ...(topic.system_prompt ? { systemPrompt: topic.system_prompt } : {})
+    });
+    navigate(`/session?${params.toString()}`);
   }
 
   return (
