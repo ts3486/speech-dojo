@@ -23,8 +23,9 @@ export function SessionAlerts({ alerts }: Props) {
           key={alert.type}
           role="alert"
           style={{
-            border: "1px solid #f59e0b",
-            background: "#fff7ed",
+            border: "1px solid var(--color-primary)",
+            background: "var(--color-primary-soft)",
+            borderRadius: "var(--radius)",
             padding: "0.5rem",
             marginBottom: "0.5rem"
           }}

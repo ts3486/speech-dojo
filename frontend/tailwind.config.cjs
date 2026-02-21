@@ -4,20 +4,22 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        background: "#FFFBF7",
+        background: "#F5F3FC",
         surface: "#FFFFFF",
-        surfaceAlt: "#FFF2E6",
-        text: "#1F2937",
-        muted: "#6B7280",
-        textMuted: "#9CA3AF",
-        primary: "#FB923C",
-        primaryHover: "#F97316",
-        primaryActive: "#EA580C",
-        primarySoft: "#FED7AA",
-        accent: "#0F766E",
-        accentSoft: "#99F6E4",
+        surfaceAlt: "#EEEAFF",
+        text: "#1A1830",
+        muted: "#6E6A85",
+        textMuted: "#9895B0",
+        primary: "#5C4EE0",
+        primaryHover: "#4A3DC7",
+        primaryActive: "#3A2DAF",
+        primarySoft: "#EBE9FA",
+        secondary: "#FF6B6B",
+        secondarySoft: "#FFE5E5",
+        accent: "#FF6B6B",
+        accentSoft: "#FFE5E5",
         danger: "#EF4444",
-        border: "#E7E2DA",
+        border: "#D9D6EC",
         success: "#22C55E",
         successSoft: "#DCFCE7",
         warning: "#F59E0B",
@@ -25,14 +27,14 @@ module.exports = {
         errorSoft: "#FEE2E2"
       },
       boxShadow: {
-        soft: "0 16px 40px rgba(0, 0, 0, 0.12)"
+        soft: "0 16px 40px rgba(92, 78, 224, 0.10)"
       },
       borderRadius: {
         xl: "12px"
       },
       fontFamily: {
-        sans: ["Manrope", "system-ui", "-apple-system", "BlinkMacSystemFont", "Segoe UI", "sans-serif"],
-        heading: ["Sora", "Manrope", "system-ui", "-apple-system", "BlinkMacSystemFont", "Segoe UI", "sans-serif"]
+        sans: ["Nunito", "system-ui", "-apple-system", "BlinkMacSystemFont", "Segoe UI", "sans-serif"],
+        heading: ["Bricolage Grotesque", "Nunito", "system-ui", "-apple-system", "BlinkMacSystemFont", "Segoe UI", "sans-serif"]
       }
     }
   },
