@@ -2,10 +2,17 @@ type Segment = { speaker: string; text: string; timestamp?: string };
 
 interface Props {
   segments: Segment[];
+  emptyMessage?: string;
 }
 
-export function TranscriptView({ segments }: Props) {
-  if (!segments.length) return <p>No transcript yet.</p>;
+export function TranscriptView({ segments, emptyMessage }: Props) {
+  if (!segments.length) {
+    return (
+      <p style={{ margin: 0, color: "var(--color-muted)", fontSize: 14 }}>
+        {emptyMessage ?? "No transcript yet."}
+      </p>
+    );
+  }
   return (
     <ul className="transcript-list" aria-label="transcript">
       {segments.map((s, idx) => (

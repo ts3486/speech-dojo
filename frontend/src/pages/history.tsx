@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { API_BASE, DEMO_USER } from "../config";
@@ -9,6 +10,7 @@ type SessionListItem = {
   id: string;
   topic_id: string;
   topic_title: string;
+  topic_category?: string | null;
   start_time: string;
   duration_seconds?: number | null;
   status: string;
@@ -18,6 +20,31 @@ type SessionListItem = {
   has_transcript: boolean;
 };
 
+function formatDuration(seconds: number | null | undefined): string {
+  if (!seconds) return "—";
+  const m = Math.floor(seconds / 60);
+  const s = seconds % 60;
+  return m > 0 ? `${m}m ${s}s` : `${s}s`;
+}
+
+function formatStatus(status: string): string {
+  const map: Record<string, string> = {
+    ended: "Completed",
+    in_progress: "In Progress",
+    error: "Error",
+    recovering: "Recovering",
+    created: "Started",
+  };
+  return map[status] ?? status;
+}
+
+function statusTone(status: string): "active" | "recovering" | "error" | "idle" {
+  if (status === "ended") return "active";
+  if (status === "recovering") return "recovering";
+  if (status === "error") return "error";
+  return "idle";
+}
+
 interface Props {
   onSelect?: (id: string) => void;
 }
@@ -25,6 +52,7 @@ interface Props {
 export function HistoryPage({ onSelect }: Props) {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const [confirmingDelete, setConfirmingDelete] = useState<string | null>(null);
 
   const {
     data: sessions = [],
@@ -40,8 +68,6 @@ export function HistoryPage({ onSelect }: Props) {
   });
 
   async function deleteSession(id: string) {
-    const confirmed = window.confirm("Delete this session?");
-    if (!confirmed) return;
     const res = await fetch(`${API_BASE}/api/sessions/${id}`, {
       method: "DELETE",
       headers: { "x-user-id": DEMO_USER }
@@ -53,6 +79,7 @@ export function HistoryPage({ onSelect }: Props) {
     queryClient.setQueryData<SessionListItem[] | undefined>(["sessions"], (prev) =>
       (prev ?? []).filter((s) => s.id !== id)
     );
+    setConfirmingDelete(null);
   }
 
   return (
@@ -64,7 +91,14 @@ export function HistoryPage({ onSelect }: Props) {
         </div>
         <Button onClick={() => navigate("/session")}>Start a session</Button>
       </div>
-      {loading && <p>Loading…</p>}
+
+      {loading && (
+        <div className="history-list">
+          {Array.from({ length: 3 }).map((_, i) => (
+            <div key={i} className="history-row-skeleton skeleton" />
+          ))}
+        </div>
+      )}
       {isError && <p className="text-danger">{(error as Error)?.message ?? "History load failed"}</p>}
       {!loading && sessions.length === 0 ? (
         <div className="empty-state" role="status">
@@ -83,18 +117,15 @@ export function HistoryPage({ onSelect }: Props) {
                 <h3>{s.topic_title}</h3>
                 <p className="meta-row">
                   <span>{new Date(s.start_time).toLocaleString()}</span>
-                  <span>Duration: {s.duration_seconds ?? "?"}s</span>
+                  <span>{formatDuration(s.duration_seconds)}</span>
+                  {s.topic_category && (
+                    <span className={`category-badge category-badge--${s.topic_category}`}>
+                      {s.topic_category}
+                    </span>
+                  )}
                   <StatusChip
-                    label={s.status}
-                    tone={
-                      s.status === "ended"
-                        ? "active"
-                        : s.status === "recovering"
-                        ? "recovering"
-                        : s.status === "error"
-                        ? "error"
-                        : "idle"
-                    }
+                    label={formatStatus(s.status)}
+                    tone={statusTone(s.status)}
                   />
                 </p>
               </div>
@@ -108,9 +139,21 @@ export function HistoryPage({ onSelect }: Props) {
                     Open
                   </LinkButton>
                 )}
-                <Button variant="danger" onClick={() => deleteSession(s.id)}>
-                  Delete
-                </Button>
+                {confirmingDelete === s.id ? (
+                  <div className="delete-confirm">
+                    <span className="delete-confirm__label">Delete?</span>
+                    <Button variant="danger" onClick={() => deleteSession(s.id)}>
+                      Yes
+                    </Button>
+                    <Button variant="ghost" onClick={() => setConfirmingDelete(null)}>
+                      Cancel
+                    </Button>
+                  </div>
+                ) : (
+                  <Button variant="danger" onClick={() => setConfirmingDelete(s.id)}>
+                    Delete
+                  </Button>
+                )}
               </div>
             </article>
           ))}

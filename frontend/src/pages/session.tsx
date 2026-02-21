@@ -7,7 +7,7 @@ import { SessionRecorder } from "../services/recorder";
 import { TranscriptView } from "../components/TranscriptView";
 import { type SessionAlert } from "../components/SessionAlerts";
 import { AlertStack, type Alert } from "../components/AlertStack";
-import { StatusBar } from "../components/StatusBar";
+import { Button } from "../components/ui/Button";
 import { API_BASE, DEMO_USER } from "../config";
 import { fetchTopics } from "../services/api";
 
@@ -20,6 +20,42 @@ type Topic = {
   system_prompt?: string | null;
 };
 type Session = { id: string; topic_id: string; status: string };
+
+function PlayIcon() {
+  return (
+    <svg width="26" height="26" viewBox="0 0 26 26" fill="none" aria-hidden="true">
+      <polygon points="7,4 22,13 7,22" fill="currentColor" />
+    </svg>
+  );
+}
+
+function StopIcon() {
+  return (
+    <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+      <rect x="3" y="3" width="14" height="14" rx="2.5" fill="currentColor" />
+    </svg>
+  );
+}
+
+function Waveform({ active }: { active: boolean }) {
+  return (
+    <div className={`waveform${active ? " waveform--active" : ""}`} aria-hidden="true">
+      {Array.from({ length: 28 }).map((_, i) => (
+        <div
+          key={i}
+          className="waveform__bar"
+          style={{ animationDelay: `${(i % 8) * 0.13}s` }}
+        />
+      ))}
+    </div>
+  );
+}
+
+function formatTime(seconds: number): string {
+  const m = Math.floor(seconds / 60);
+  const s = seconds % 60;
+  return `${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`;
+}
 
 export default function SessionPage() {
   const [searchParams] = useSearchParams();
@@ -37,8 +73,11 @@ export default function SessionPage() {
   const [isOffline, setIsOffline] = useState(!navigator.onLine);
   const [micStatus, setMicStatus] = useState<MicStatus>("idle");
   const [tokenStatus, setTokenStatus] = useState<"idle" | "valid" | "refreshing" | "error">("idle");
+  const [showDebug, setShowDebug] = useState(false);
+  const [elapsed, setElapsed] = useState(0);
   const recorderRef = useRef<SessionRecorder | null>(null);
   const realtimeRef = useRef<ReturnType<typeof createRealtimeClient> | null>(null);
+  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const {
     data: topics = [],
@@ -48,6 +87,26 @@ export default function SessionPage() {
     queryFn: fetchTopics,
     staleTime: 30_000
   });
+
+  // Session timer
+  useEffect(() => {
+    if (status === "listening") {
+      setElapsed(0);
+      const startTime = Date.now();
+      timerRef.current = setInterval(() => {
+        setElapsed(Math.floor((Date.now() - startTime) / 1000));
+      }, 500);
+    } else {
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
+        timerRef.current = null;
+      }
+      if (status === "idle") setElapsed(0);
+    }
+    return () => {
+      if (timerRef.current) clearInterval(timerRef.current);
+    };
+  }, [status]);
 
   useEffect(() => {
     if (topicsError) {
@@ -346,111 +405,163 @@ export default function SessionPage() {
 
   const selectedTopic = topics.find((t) => t.id === selected);
   const topicTitleFromUrl = searchParams.get("topicTitle") || undefined;
-  const topicDisplay = selectedTopic?.title || topicTitleFromUrl || "Select a topic";
+  const topicDisplay = selectedTopic?.title || topicTitleFromUrl || null;
+  const isSessionActive = status === "listening" || status === "connecting" || status === "ending";
+
+  const transcriptEmptyMessage =
+    status === "listening"
+      ? "Your transcript will appear here after the session ends."
+      : status === "connecting"
+      ? "Connecting…"
+      : "Start a session to see your transcript here.";
 
   return (
     <div className="page page-session">
+      {/* Toast overlay for alerts */}
+      {alertItems.length > 0 && (
+        <div className="toast-overlay" role="region" aria-label="session alerts">
+          <AlertStack alerts={alertItems} />
+        </div>
+      )}
+
       <div className="page-header">
         <div>
           <p className="eyebrow">Session</p>
-          <h2>Topic: {topicDisplay}</h2>
+          <h2>{topicDisplay ? `Topic: ${topicDisplay}` : "New Session"}</h2>
         </div>
       </div>
 
       <div className="session-layout">
         <section className="session-main" aria-label="session controls and recording">
+
+          {/* Topic selector */}
           <div className="control-row">
             <label htmlFor="topic">Topic</label>
-            <select
-              id="topic"
-              value={selected}
-              onChange={(e) => setSelected(e.target.value)}
-              aria-label="topic picker"
-            >
-              <option value="">Select…</option>
-              {topics.map((t) => (
-                <option key={t.id} value={t.id}>
-                  {t.title} {t.difficulty ? `(${t.difficulty})` : ""}
-                </option>
-              ))}
-            </select>
+            {selected && topicDisplay ? (
+              <div className="topic-readonly">
+                <span className="topic-readonly__name">{topicDisplay}</span>
+                {!isSessionActive && (
+                  <button
+                    type="button"
+                    className="topic-readonly__change"
+                    onClick={() => setSelected(undefined)}
+                  >
+                    Change
+                  </button>
+                )}
+              </div>
+            ) : (
+              <select
+                id="topic"
+                value={selected}
+                onChange={(e) => setSelected(e.target.value)}
+                aria-label="topic picker"
+              >
+                <option value="">Select…</option>
+                {topics.map((t) => (
+                  <option key={t.id} value={t.id}>
+                    {t.title} {t.difficulty ? `(${t.difficulty})` : ""}
+                  </option>
+                ))}
+              </select>
+            )}
           </div>
 
-          <StatusBar
-            status={{
-              connection: connectionState,
-              mic: micStatus,
-              token: tokenStatus,
-              info: status === "ending" ? "Finalizing…" : undefined
-            }}
-          />
-          <div className="meta-row" aria-live="polite">
-            <span>Status: {status}</span>
-            <span>Mic: {micStatus}</span>
-          </div>
           {error && (
             <p role="status" className="text-danger m-0">
               {error}
             </p>
           )}
 
+          {/* Recording panel */}
           <div className="recording-panel" aria-label="speech recording display">
-            <div className="flex flex-col items-center gap-4">
-              {status === "listening" ? (
+            {(status === "idle" || status === "error") && (
+              <div className="recording-idle">
+                {!selected && <p>Select a topic above to get started</p>}
                 <button
                   type="button"
-                  onClick={endSession}
-                  disabled={!session || !recorderReady}
-                  aria-label="Stop session"
-                  className="w-20 h-20 rounded-full bg-secondary text-white flex items-center justify-center shadow-soft hover:opacity-90 active:scale-95 transition-all duration-150 disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                    <rect x="4" y="4" width="16" height="16" rx="3" fill="currentColor" />
-                  </svg>
-                </button>
-              ) : (
-                <button
-                  type="button"
+                  className="record-btn record-btn--start"
                   onClick={startSession}
-                  disabled={status === "connecting" || status === "ending"}
+                  disabled={!selected}
                   aria-label="Start session"
-                  className={`w-20 h-20 rounded-full bg-primary text-white flex items-center justify-center shadow-soft hover:bg-primaryHover active:scale-95 transition-all duration-150 disabled:opacity-50 disabled:cursor-not-allowed${status === "connecting" ? " animate-pulse" : ""}`}
                 >
-                  <svg width="28" height="28" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                    <path d="M6 4.5L19 12L6 19.5V4.5Z" fill="currentColor" />
-                  </svg>
+                  <PlayIcon />
                 </button>
-              )}
-              <span className="text-sm font-medium text-muted">
-                {status === "listening"
-                  ? "Tap to stop"
-                  : status === "connecting" || status === "ending"
-                  ? "Please wait…"
-                  : "Tap to start"}
-              </span>
-            </div>
+                {selected && <p className="record-btn-hint">Tap to start recording</p>}
+              </div>
+            )}
+            {status === "connecting" && (
+              <div className="connecting-dots">
+                <div className="connecting-dots__row">
+                  <div className="connecting-dot" />
+                  <div className="connecting-dot" />
+                  <div className="connecting-dot" />
+                </div>
+                <p>Connecting…</p>
+              </div>
+            )}
+            {status === "listening" && (
+              <div className="recording-active">
+                <Waveform active />
+                <div className="session-timer" aria-live="off">{formatTime(elapsed)}</div>
+                <button
+                  type="button"
+                  className="record-btn record-btn--stop"
+                  onClick={endSession}
+                  disabled={!recorderReady}
+                  aria-label="Stop and save session"
+                >
+                  <StopIcon />
+                </button>
+              </div>
+            )}
+            {status === "ending" && (
+              <div className="recording-idle">
+                <p>Finalizing your session…</p>
+              </div>
+            )}
+            {status === "ended" && (
+              <div className="recording-idle">
+                <p>Session complete! Review your transcript →</p>
+              </div>
+            )}
           </div>
         </section>
 
         <aside className="session-side" aria-label="conversation and alerts">
           <div className="side-panel">
-            <div className="section-title">Conversation log / transcript</div>
-            <TranscriptView segments={transcript} />
+            <div className="section-title">Transcript</div>
+            <TranscriptView
+              segments={transcript}
+              emptyMessage={transcriptEmptyMessage}
+            />
           </div>
+
           <div className="side-panel">
-            <div className="section-title">Alerts & Debug</div>
-            <AlertStack alerts={alertItems} />
-            <div className="debug-log" aria-label="debug-log">
-              {log.length === 0 ? (
-                <p style={{ margin: 0 }}>No events yet.</p>
-              ) : (
-                <ul style={{ margin: 0, paddingLeft: 16 }}>
-                  {log.map((line, idx) => (
-                    <li key={idx}>{line}</li>
-                  ))}
-                </ul>
-              )}
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+              <div className="section-title">Debug</div>
+              <button
+                type="button"
+                className="debug-toggle"
+                onClick={() => setShowDebug((v) => !v)}
+                aria-expanded={showDebug}
+              >
+                {showDebug ? "Hide" : "Show"}
+              </button>
             </div>
+            {showDebug && (
+              <div className="debug-log" aria-label="debug-log">
+                {log.length === 0 ? (
+                  <p style={{ margin: 0 }}>No events yet.</p>
+                ) : (
+                  <ul style={{ margin: 0, paddingLeft: 16 }}>
+                    {log.map((line, idx) => (
+                      <li key={idx}>{line}</li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+            )}
           </div>
         </aside>
       </div>
