@@ -154,15 +154,18 @@ export function SessionDetailPage({ sessionId, onBack }: Props) {
 
             {detail.status === "ended" && (
               <div className="privacy-toggle">
-                <span className="privacy-toggle__label">Visibility</span>
-                <span className="privacy-toggle__status">
-                  {detail.privacy === "public"
-                    ? "Public — visible in Social Hub"
-                    : "Private — only you can see this"}
-                </span>
+                <div className="privacy-toggle__info">
+                  <span className="privacy-toggle__label">Visibility</span>
+                  <span className="privacy-toggle__status">
+                    {detail.privacy === "public"
+                      ? "Public — visible in Social Hub"
+                      : "Private — only you can see this"}
+                  </span>
+                </div>
                 {detail.privacy === "public" ? (
                   <Button
                     variant="ghost"
+                    size="sm"
                     onClick={() => privacyMutation.mutate("private")}
                     disabled={privacyMutation.isPending}
                   >
@@ -170,7 +173,8 @@ export function SessionDetailPage({ sessionId, onBack }: Props) {
                   </Button>
                 ) : (
                   <Button
-                    variant="secondary"
+                    variant="primary"
+                    size="sm"
                     onClick={() => privacyMutation.mutate("public")}
                     disabled={privacyMutation.isPending}
                   >

@@ -151,9 +151,9 @@ export function PublicSessionDetailPage() {
             >
               {session.speaker_tag.charAt(0)}
             </div>
-            <div>
-              <span style={{ fontWeight: 600, fontSize: 14 }}>{session.speaker_tag}</span>
-              <div style={{ fontSize: 13, color: "var(--color-muted)", marginTop: 2, display: "flex", alignItems: "center", gap: 6 }}>
+            <div className="public-detail-speaker-meta">
+              <span className="public-detail-speaker-name">{session.speaker_tag}</span>
+              <div className="public-detail-speaker-sub">
                 {formatDate(session.start_time)}
                 {duration && ` · ${duration}`}
                 {session.topic_category && (
@@ -162,7 +162,7 @@ export function PublicSessionDetailPage() {
               </div>
             </div>
           </div>
-          <h2 style={{ marginTop: 12 }}>{session.topic_title}</h2>
+          <h2 className="public-detail-title">{session.topic_title}</h2>
         </div>
       </div>
 
@@ -240,8 +240,9 @@ export function PublicSessionDetailPage() {
               maxLength={500}
               rows={3}
             />
-            <div>
+            <div className="comment-form__actions">
               <Button
+                size="sm"
                 onClick={() => {
                   if (commentText.trim()) commentMutation.mutate(commentText.trim());
                 }}
@@ -254,9 +255,12 @@ export function PublicSessionDetailPage() {
         </div>
       </Card>
 
-      <div style={{ marginTop: 24 }}>
+      <div className="practice-cta">
+        <div className="practice-cta__text">
+          <span className="practice-cta__label">Ready to practice?</span>
+          <p className="practice-cta__desc">Try this topic yourself in a live session.</p>
+        </div>
         <Button
-          variant="secondary"
           onClick={() =>
             navigate(`/session?topicTitle=${encodeURIComponent(session.topic_title)}`)
           }
