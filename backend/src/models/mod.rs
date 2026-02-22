@@ -1,3 +1,4 @@
+pub mod ai_feedback;
 pub mod audio_recording;
 pub mod client_secret;
 pub mod session;

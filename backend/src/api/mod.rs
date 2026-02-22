@@ -1,6 +1,6 @@
 use crate::api::health::health;
 use crate::api::realtime::realtime_router;
-use crate::api::sessions::sessions_router;
+use crate::api::sessions::{public_sessions_router, sessions_router};
 use crate::api::topics::topics_router;
 use crate::state::SharedState;
 use axum::body::Body;
@@ -22,6 +22,7 @@ pub fn router(state: SharedState) -> Router {
     let api = Router::new()
         .merge(topics_router())
         .merge(sessions_router())
+        .merge(public_sessions_router())
         .merge(realtime_router())
         .layer(cors.clone())
         .layer(TraceLayer::new_for_http())

@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useSearchParams, useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { createRealtimeClient } from "../services/realtime";
 import { requestMic, type MicStatus } from "../services/mic";
@@ -9,7 +9,7 @@ import { type SessionAlert } from "../components/SessionAlerts";
 import { AlertStack, type Alert } from "../components/AlertStack";
 import { Button } from "../components/ui/Button";
 import { API_BASE, DEMO_USER } from "../config";
-import { fetchTopics } from "../services/api";
+import { fetchTopics, setSessionPrivacy } from "../services/api";
 
 type Topic = {
   id: string;
@@ -59,6 +59,7 @@ function formatTime(seconds: number): string {
 
 export default function SessionPage() {
   const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
   const [selected, setSelected] = useState<string>();
   const [mode, setMode] = useState<"solo" | "interactive">("solo");
   const [systemPrompt, setSystemPrompt] = useState<string | null>(null);
@@ -75,6 +76,7 @@ export default function SessionPage() {
   const [tokenStatus, setTokenStatus] = useState<"idle" | "valid" | "refreshing" | "error">("idle");
   const [showDebug, setShowDebug] = useState(false);
   const [elapsed, setElapsed] = useState(0);
+  const [shareStatus, setShareStatus] = useState<"idle" | "sharing" | "shared" | "error">("idle");
   const recorderRef = useRef<SessionRecorder | null>(null);
   const realtimeRef = useRef<ReturnType<typeof createRealtimeClient> | null>(null);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -143,6 +145,17 @@ export default function SessionPage() {
   function pushLog(message: string) {
     setLog((prev) => [...prev, message]);
     console.info("[session]", message);
+  }
+
+  async function handleSharePublic() {
+    if (!session) return;
+    setShareStatus("sharing");
+    try {
+      await setSessionPrivacy(session.id, "public");
+      setShareStatus("shared");
+    } catch {
+      setShareStatus("error");
+    }
   }
 
   function upsertAlert(alert: SessionAlert) {
@@ -522,7 +535,38 @@ export default function SessionPage() {
             )}
             {status === "ended" && (
               <div className="recording-idle">
-                <p>Session complete! Review your transcript →</p>
+                <p>Session complete!</p>
+                <div className="share-prompt">
+                  <p className="share-prompt__title">Share your session?</p>
+                  <p className="share-prompt__subtitle">Let the community hear your speech.</p>
+                  <div className="share-prompt__actions">
+                    {shareStatus === "shared" ? (
+                      <span style={{ color: "var(--color-primary)", fontWeight: 600 }}>✓ Shared to Social Hub!</span>
+                    ) : (
+                      <Button
+                        onClick={handleSharePublic}
+                        disabled={shareStatus === "sharing"}
+                        size="lg"
+                      >
+                        {shareStatus !== "sharing" && (
+                          <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+                            <circle cx="11" cy="2.5" r="1.5" stroke="currentColor" strokeWidth="1.4"/>
+                            <circle cx="11" cy="11.5" r="1.5" stroke="currentColor" strokeWidth="1.4"/>
+                            <circle cx="3" cy="7" r="1.5" stroke="currentColor" strokeWidth="1.4"/>
+                            <line x1="4.3" y1="6.2" x2="9.7" y2="3.3" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/>
+                            <line x1="4.3" y1="7.8" x2="9.7" y2="10.7" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/>
+                          </svg>
+                        )}
+                        {shareStatus === "sharing" ? "Sharing…" : "Share to Social Hub"}
+                      </Button>
+                    )}
+                    {session && (
+                      <Button variant="secondary" onClick={() => navigate(`/sessions/${session.id}`)}>
+                        View Session →
+                      </Button>
+                    )}
+                  </div>
+                </div>
               </div>
             )}
           </div>

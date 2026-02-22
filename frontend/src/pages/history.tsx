@@ -86,7 +86,7 @@ export function HistoryPage({ onSelect }: Props) {
     <section className="page page-history">
       <div className="page-header">
         <div>
-          <p className="eyebrow">History</p>
+          <p className="eyebrow">Your Sessions</p>
           <h2>History</h2>
         </div>
         <Button onClick={() => navigate("/session")}>Start a session</Button>
@@ -103,11 +103,9 @@ export function HistoryPage({ onSelect }: Props) {
       {!loading && sessions.length === 0 ? (
         <div className="empty-state" role="status">
           <div className="empty-illustration" aria-hidden="true" />
-          <div>
-            <h3>No sessions yet</h3>
-            <p>Start a new session to see your progress here.</p>
-            <Button onClick={() => navigate("/session")}>Start a session</Button>
-          </div>
+          <h3>No sessions yet</h3>
+          <p>Start a new session to see your progress here.</p>
+          <Button onClick={() => navigate("/session")}>Start a session</Button>
         </div>
       ) : (
         <div className="history-list" role="list">
@@ -131,26 +129,35 @@ export function HistoryPage({ onSelect }: Props) {
               </div>
               <div className="history-row__actions">
                 {onSelect ? (
-                  <Button variant="secondary" onClick={() => onSelect(s.id)}>
-                    Open
+                  <Button variant="secondary" size="lg" onClick={() => onSelect(s.id)}>
+                    View
+                    <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+                      <path d="M2 7h10M8 3l4 4-4 4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
+                    </svg>
                   </Button>
                 ) : (
-                  <LinkButton to={`/sessions/${s.id}`} variant="secondary">
-                    Open
+                  <LinkButton to={`/sessions/${s.id}`} variant="secondary" size="lg">
+                    View
+                    <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+                      <path d="M2 7h10M8 3l4 4-4 4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
+                    </svg>
                   </LinkButton>
                 )}
                 {confirmingDelete === s.id ? (
                   <div className="delete-confirm">
                     <span className="delete-confirm__label">Delete?</span>
-                    <Button variant="danger" onClick={() => deleteSession(s.id)}>
+                    <Button size="sm" variant="danger" onClick={() => deleteSession(s.id)}>
                       Yes
                     </Button>
-                    <Button variant="ghost" onClick={() => setConfirmingDelete(null)}>
+                    <Button size="sm" variant="ghost" onClick={() => setConfirmingDelete(null)}>
                       Cancel
                     </Button>
                   </div>
                 ) : (
-                  <Button variant="danger" onClick={() => setConfirmingDelete(s.id)}>
+                  <Button variant="danger" size="lg" onClick={() => setConfirmingDelete(s.id)}>
+                    <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+                      <path d="M2 4h10M5 4V2h4v2M5.5 7v4M8.5 7v4M3 4l.7 7.3a1 1 0 0 0 1 .7h4.6a1 1 0 0 0 1-.7L11 4" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"/>
+                    </svg>
                     Delete
                   </Button>
                 )}

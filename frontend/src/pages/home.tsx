@@ -64,9 +64,6 @@ function TopicSection({
         {Array.from({ length: 3 }).map((_, idx) => {
           const topic = topics[idx];
           const disabled = !topic;
-          const difficultyClass = topic?.difficulty
-            ? `tile-difficulty tile-difficulty--${topic.difficulty}`
-            : null;
           return (
             <button
               key={topic?.id ?? `${title}-${idx}`}
@@ -78,9 +75,6 @@ function TopicSection({
             >
               {topic ? (
                 <>
-                  {difficultyClass && (
-                    <span className={difficultyClass}>{topic.difficulty}</span>
-                  )}
                   <span className="tile-title">{topic.title}</span>
                   {topic.prompt_hint && (
                     <span className="tile-hint">{topic.prompt_hint}</span>

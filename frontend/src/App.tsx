@@ -3,12 +3,15 @@ import SessionPage from "./pages/session";
 import { HistoryPage } from "./pages/history";
 import { SessionDetailPage } from "./pages/session-detail";
 import { HomePage } from "./pages/home";
+import { SocialHubPage } from "./pages/social";
+import { PublicSessionDetailPage } from "./pages/social-detail";
 
 function Shell() {
   const location = useLocation();
   const path = location.pathname;
   const isSession = path === "/session";
   const isHistory = path === "/history" || path.startsWith("/sessions");
+  const isSocial = path === "/social" || path.startsWith("/social/");
 
   return (
     <header className="app-header">
@@ -31,6 +34,9 @@ function Shell() {
         <Link to="/history" aria-current={isHistory ? "page" : undefined}>
           History
         </Link>
+        <Link to="/social" aria-current={isSocial ? "page" : undefined}>
+          Social Hub
+        </Link>
       </nav>
     </header>
   );
@@ -52,6 +58,8 @@ function App() {
             <Route path="/session" element={<SessionPage />} />
             <Route path="/history" element={<HistoryPage />} />
             <Route path="/sessions/:id" element={<SessionDetailPage />} />
+            <Route path="/social" element={<SocialHubPage />} />
+            <Route path="/social/:id" element={<PublicSessionDetailPage />} />
           </Routes>
         </main>
       </div>
