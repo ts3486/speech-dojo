@@ -1,8 +1,7 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { fireEvent, screen, waitFor } from "@testing-library/react";
 import { act } from "react";
-import SessionPage from "../../src/pages/session";
-import { MemoryRouter } from "react-router-dom";
+import SessionPage from "../../app/session/page";
 import React from "react";
 import "@testing-library/jest-dom";
 import { renderWithProviders } from "../utils";
@@ -104,11 +103,7 @@ describe("resilience flows", () => {
   it("handles network drop with retry and end-and-save path", async () => {
     const fetchMock = setupFetchMock();
 
-    renderWithProviders(
-      <MemoryRouter>
-        <SessionPage />
-      </MemoryRouter>
-    );
+    renderWithProviders(<SessionPage />);
 
     await waitFor(() =>
       expect(screen.getByRole("option", { name: /topic one/i })).toBeInTheDocument()
@@ -116,9 +111,11 @@ describe("resilience flows", () => {
     const select = screen.getByLabelText(/topic/i) as HTMLSelectElement;
     fireEvent.change(select, { target: { value: "topic-1" } });
 
-    fireEvent.click(screen.getByText(/Start Session/));
+    // Start button uses aria-label="Start session"
+    fireEvent.click(screen.getByRole("button", { name: /start session/i }));
     await waitFor(() => expect(startRealtime).toHaveBeenCalled());
-    await waitFor(() => expect(screen.getByText(/Status: listening/i)).toBeInTheDocument());
+    // After session starts, the waveform recording panel is shown
+    await waitFor(() => expect(screen.getByLabelText(/speech recording display/i)).toBeInTheDocument());
 
     // simulate offline drop
     await act(async () => {
@@ -133,11 +130,12 @@ describe("resilience flows", () => {
     fireEvent.click(retryButton);
     await waitFor(() => expect(refreshRealtime).toHaveBeenCalled());
 
-    // end session still finalizes
-    fireEvent.click(screen.getByText(/End Session/));
+    // end session via stop button (aria-label="Stop and save session")
+    fireEvent.click(screen.getByRole("button", { name: /stop and save session/i }));
     await waitFor(() => expect(stopRecorder).toHaveBeenCalled());
     await waitFor(() =>
-      expect(screen.getByText(/Session finalized and transcript received/i)).toBeInTheDocument()
+      expect(screen.getByText(/Session complete!/i)).toBeInTheDocument()
     );
+    expect(screen.getByText(/hello recovered/i)).toBeInTheDocument();
   });
 });

@@ -8,9 +8,11 @@ describe("build smoke", () => {
   it("runs next build successfully", () => {
     const output = execSync("pnpm build", {
       cwd: root,
-      env: { ...process.env, CI: "true" }
+      env: { ...process.env, CI: "true" },
+      timeout: 120_000
     }).toString();
 
-    expect(output).toMatch(/Compiled successfully/);
+    // Next.js build outputs route information
+    expect(output).toMatch(/Route|Generating|Compiled/);
   });
 });

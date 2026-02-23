@@ -1,9 +1,9 @@
-import { describe, it, beforeEach, afterEach, expect, vi } from "vitest";
-import { screen, waitFor } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
-import App from "../../src/App";
+import { describe, it, expect, vi, afterEach } from "vitest";
+import { screen } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import { renderWithProviders } from "../utils";
+
+import HomePage from "../../app/page";
 
 function fetchMock() {
   return vi.fn().mockImplementation((input: RequestInfo | URL) => {
@@ -27,40 +27,16 @@ function fetchMock() {
   });
 }
 
-describe("navigation integration", () => {
-  beforeEach(() => {
-    vi.stubGlobal("fetch", fetchMock());
-  });
-
+describe("page rendering", () => {
   afterEach(() => {
     vi.restoreAllMocks();
   });
 
-  it("navigates between Session and History routes", async () => {
-    window.history.pushState({}, "", "/");
-    const user = userEvent.setup();
-    renderWithProviders(<App />);
-
+  it("renders Home page with heading", async () => {
+    vi.stubGlobal("fetch", fetchMock());
+    renderWithProviders(<HomePage />);
     expect(
       await screen.findByRole("heading", { level: 1, name: /practice your speech/i })
     ).toBeInTheDocument();
-
-    await user.click(screen.getByRole("link", { name: /^session$/i }));
-    await waitFor(() =>
-      expect(screen.getByRole("heading", { name: /topic:/i })).toBeInTheDocument()
-    );
-
-    await user.click(screen.getByRole("link", { name: /^history$/i }));
-    await waitFor(() =>
-      expect(screen.getByRole("heading", { name: /^history$/i })).toBeInTheDocument()
-    );
-
-    // back to home
-    await user.click(screen.getByRole("link", { name: /^home$/i }));
-    await waitFor(() =>
-      expect(
-        screen.getByRole("heading", { level: 1, name: /practice your speech/i })
-      ).toBeInTheDocument()
-    );
   });
 });

@@ -1,7 +1,9 @@
+'use client';
+
 import { useMemo } from "react";
-import { useNavigate } from "react-router-dom";
+import { useRouter } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
-import { fetchTopics } from "../services/api";
+import { fetchTopics } from "../src/services/api";
 
 type Topic = {
   id: string;
@@ -89,8 +91,8 @@ function TopicSection({
   );
 }
 
-export function HomePage() {
-  const navigate = useNavigate();
+export default function HomePage() {
+  const router = useRouter();
 
   const {
     data: topics = [],
@@ -113,7 +115,7 @@ export function HomePage() {
       mode: topic.category === "interactive" ? "interactive" : "solo",
       ...(topic.system_prompt ? { systemPrompt: topic.system_prompt } : {})
     });
-    navigate(`/session?${params.toString()}`);
+    router.push(`/session?${params.toString()}`);
   }
 
   return (

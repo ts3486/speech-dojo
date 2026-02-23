@@ -1,15 +1,17 @@
-import { useEffect, useRef, useState } from "react";
-import { useSearchParams, useNavigate } from "react-router-dom";
+'use client';
+
+import { Suspense, useEffect, useRef, useState } from "react";
+import { useSearchParams, useRouter } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
-import { createRealtimeClient } from "../services/realtime";
-import { requestMic, type MicStatus } from "../services/mic";
-import { SessionRecorder } from "../services/recorder";
-import { TranscriptView } from "../components/TranscriptView";
-import { type SessionAlert } from "../components/SessionAlerts";
-import { AlertStack, type Alert } from "../components/AlertStack";
-import { Button } from "../components/ui/Button";
-import { API_BASE, DEMO_USER } from "../config";
-import { fetchTopics, setSessionPrivacy } from "../services/api";
+import { createRealtimeClient } from "../../src/services/realtime";
+import { requestMic, type MicStatus } from "../../src/services/mic";
+import { SessionRecorder } from "../../src/services/recorder";
+import { TranscriptView } from "../../src/components/TranscriptView";
+import { type SessionAlert } from "../../src/components/SessionAlerts";
+import { AlertStack, type Alert } from "../../src/components/AlertStack";
+import { Button } from "../../src/components/ui/Button";
+import { API_BASE, DEMO_USER } from "../../src/config";
+import { fetchTopics, setSessionPrivacy } from "../../src/services/api";
 
 type Topic = {
   id: string;
@@ -57,9 +59,9 @@ function formatTime(seconds: number): string {
   return `${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`;
 }
 
-export default function SessionPage() {
-  const [searchParams] = useSearchParams();
-  const navigate = useNavigate();
+function SessionPageContent() {
+  const searchParams = useSearchParams();
+  const router = useRouter();
   const [selected, setSelected] = useState<string>();
   const [mode, setMode] = useState<"solo" | "interactive">("solo");
   const [systemPrompt, setSystemPrompt] = useState<string | null>(null);
@@ -128,9 +130,9 @@ export default function SessionPage() {
   }, [mode]);
 
   useEffect(() => {
-    const topicFromUrl = searchParams.get("topicId");
-    const modeFromUrl = searchParams.get("mode");
-    const promptFromUrl = searchParams.get("systemPrompt");
+    const topicFromUrl = searchParams?.get("topicId");
+    const modeFromUrl = searchParams?.get("mode");
+    const promptFromUrl = searchParams?.get("systemPrompt");
     if (modeFromUrl === "interactive") setMode("interactive");
     if (promptFromUrl) setSystemPrompt(promptFromUrl);
     if (topicFromUrl && topics.length > 0 && !selected) {
@@ -417,7 +419,7 @@ export default function SessionPage() {
   }));
 
   const selectedTopic = topics.find((t) => t.id === selected);
-  const topicTitleFromUrl = searchParams.get("topicTitle") || undefined;
+  const topicTitleFromUrl = searchParams?.get("topicTitle") || undefined;
   const topicDisplay = selectedTopic?.title || topicTitleFromUrl || null;
   const isSessionActive = status === "listening" || status === "connecting" || status === "ending";
 
@@ -546,7 +548,7 @@ export default function SessionPage() {
                       <Button
                         onClick={handleSharePublic}
                         disabled={shareStatus === "sharing"}
-                        size="lg"
+                        size="md"
                       >
                         {shareStatus !== "sharing" && (
                           <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
@@ -561,7 +563,7 @@ export default function SessionPage() {
                       </Button>
                     )}
                     {session && (
-                      <Button variant="secondary" onClick={() => navigate(`/sessions/${session.id}`)}>
+                      <Button variant="secondary" onClick={() => router.push(`/sessions/${session.id}`)}>
                         View Session →
                       </Button>
                     )}
@@ -610,5 +612,13 @@ export default function SessionPage() {
         </aside>
       </div>
     </div>
+  );
+}
+
+export default function SessionPage() {
+  return (
+    <Suspense fallback={<div className="page page-session"><p>Loading…</p></div>}>
+      <SessionPageContent />
+    </Suspense>
   );
 }

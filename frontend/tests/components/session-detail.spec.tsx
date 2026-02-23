@@ -1,9 +1,18 @@
 import { describe, it, expect, vi, afterEach } from "vitest";
 import { screen, waitFor } from "@testing-library/react";
-import { MemoryRouter } from "react-router-dom";
-import { SessionDetailPage } from "../../src/pages/session-detail";
 import "@testing-library/jest-dom";
 import { renderWithProviders } from "../utils";
+
+// Override useParams for this file to provide session ID
+vi.mock("next/navigation", () => ({
+  useRouter: () => ({ push: vi.fn(), replace: vi.fn(), back: vi.fn() }),
+  usePathname: () => "/sessions/session-2",
+  useParams: () => ({ id: "session-2" }),
+  useSearchParams: () => new URLSearchParams(),
+}));
+
+// Must import AFTER vi.mock since vi.mock is hoisted
+import SessionDetailRoute from "../../app/sessions/[id]/page";
 
 afterEach(() => {
   vi.restoreAllMocks();
@@ -29,11 +38,7 @@ describe("SessionDetailPage", () => {
     } as any);
     vi.stubGlobal("fetch", fetchMock);
 
-    renderWithProviders(
-      <MemoryRouter>
-        <SessionDetailPage sessionId="session-2" onBack={() => {}} />
-      </MemoryRouter>
-    );
+    renderWithProviders(<SessionDetailRoute />);
 
     await waitFor(() => expect(screen.getByText(/Topic Two/)).toBeInTheDocument());
     expect(screen.getByLabelText(/session audio player/i)).toBeInTheDocument();

@@ -18,9 +18,14 @@ describe("StatusBar and AlertStack", () => {
     );
 
     expect(screen.getByLabelText(/session status/i)).toBeInTheDocument();
-    expect(screen.getByText(/Connection: active/i)).toBeInTheDocument();
-    expect(screen.getByText(/Mic: granted/i)).toBeInTheDocument();
-    expect(screen.getByText(/Token: valid/i)).toBeInTheDocument();
+    // connectionLabel("active") → "Live"
+    expect(screen.getByText("Connection")).toBeInTheDocument();
+    expect(screen.getByText("Live")).toBeInTheDocument();
+    // micLabel("granted") → "Active", label is "Microphone"
+    expect(screen.getByText("Microphone")).toBeInTheDocument();
+    // tokenLabel("valid") → "Active", label is "Token"
+    expect(screen.getByText("Token")).toBeInTheDocument();
+    expect(screen.getByText("Listening")).toBeInTheDocument();
   });
 
   it("shows alerts with inline actions", async () => {

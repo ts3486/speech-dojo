@@ -1,6 +1,8 @@
+'use client';
+
 import { useQuery } from "@tanstack/react-query";
-import { SocialSessionCard } from "../components/SocialSessionCard";
-import { fetchPublicSessions, type PublicSessionListItem } from "../services/api";
+import { SocialSessionCard } from "../../src/components/SocialSessionCard";
+import { fetchPublicSessions, type PublicSessionListItem } from "../../src/services/api";
 
 function SkeletonCard() {
   return (
@@ -18,7 +20,7 @@ function SkeletonCard() {
   );
 }
 
-export function SocialHubPage() {
+export default function SocialHubPage() {
   const { data: sessions = [], isLoading, isError, error } = useQuery<PublicSessionListItem[]>({
     queryKey: ["publicSessions"],
     queryFn: fetchPublicSessions,

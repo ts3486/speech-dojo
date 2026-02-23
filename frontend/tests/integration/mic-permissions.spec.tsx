@@ -1,7 +1,6 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { fireEvent, screen, waitFor } from "@testing-library/react";
-import SessionPage from "../../src/pages/session";
-import { MemoryRouter } from "react-router-dom";
+import SessionPage from "../../app/session/page";
 import React from "react";
 import "@testing-library/jest-dom";
 import { renderWithProviders } from "../utils";
@@ -96,11 +95,7 @@ describe("mic permission handling", () => {
     const fetchMock = setupFetchMock();
     requestMicMock.mockResolvedValueOnce("denied").mockResolvedValueOnce("granted");
 
-    renderWithProviders(
-      <MemoryRouter>
-        <SessionPage />
-      </MemoryRouter>
-    );
+    renderWithProviders(<SessionPage />);
 
     await waitFor(() =>
       expect(screen.getByRole("option", { name: /topic one/i })).toBeInTheDocument()
@@ -109,7 +104,8 @@ describe("mic permission handling", () => {
     const select = screen.getByLabelText(/topic/i) as HTMLSelectElement;
     fireEvent.change(select, { target: { value: "topic-1" } });
 
-    fireEvent.click(screen.getByText(/Start Session/));
+    // Start button uses aria-label="Start session"
+    fireEvent.click(screen.getByRole("button", { name: /start session/i }));
     await waitFor(() => {
       const alerts = screen.getAllByText(/microphone permission required/i);
       expect(alerts.length).toBeGreaterThan(0);

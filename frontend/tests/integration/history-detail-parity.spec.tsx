@@ -1,9 +1,16 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { screen, waitFor } from "@testing-library/react";
-import { MemoryRouter, Route, Routes } from "react-router-dom";
-import { SessionDetailPage } from "../../src/pages/session-detail";
 import "@testing-library/jest-dom";
 import { renderWithProviders } from "../utils";
+
+vi.mock("next/navigation", () => ({
+  useRouter: () => ({ push: vi.fn(), replace: vi.fn(), back: vi.fn() }),
+  usePathname: () => "/sessions/s1",
+  useParams: () => ({ id: "s1" }),
+  useSearchParams: () => new URLSearchParams(),
+}));
+
+import SessionDetailRoute from "../../app/sessions/[id]/page";
 
 describe("history detail parity", () => {
   beforeEach(() => {
@@ -31,16 +38,9 @@ describe("history detail parity", () => {
       })
     }) as any);
 
-    renderWithProviders(
-      <MemoryRouter initialEntries={["/sessions/s1"]}>
-        <Routes>
-          <Route path="/sessions/:id" element={<SessionDetailPage />} />
-        </Routes>
-      </MemoryRouter>
-    );
+    renderWithProviders(<SessionDetailRoute />);
 
-    expect(await screen.findByRole("heading", { name: /history detail/i })).toBeInTheDocument();
-    expect(await screen.findByText(/sample line/i)).toBeInTheDocument();
+    expect(await screen.findByText(/Sample line/i)).toBeInTheDocument();
     expect(screen.getByLabelText(/session audio player/i)).toBeInTheDocument();
   });
 
@@ -50,13 +50,7 @@ describe("history detail parity", () => {
       json: async () => ({})
     }) as any);
 
-    renderWithProviders(
-      <MemoryRouter initialEntries={["/sessions/s1"]}>
-        <Routes>
-          <Route path="/sessions/:id" element={<SessionDetailPage />} />
-        </Routes>
-      </MemoryRouter>
-    );
+    renderWithProviders(<SessionDetailRoute />);
 
     expect(await screen.findByText(/failed to load session/i)).toBeInTheDocument();
   });

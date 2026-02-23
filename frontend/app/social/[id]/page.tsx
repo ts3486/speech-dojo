@@ -1,9 +1,12 @@
+'use client';
+
 import { useState } from "react";
-import { useParams, Link, useNavigate } from "react-router-dom";
+import { useParams, useRouter } from "next/navigation";
+import Link from "next/link";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { TranscriptView } from "../components/TranscriptView";
-import { Card } from "../components/ui/Card";
-import { Button } from "../components/ui/Button";
+import { TranscriptView } from "../../../src/components/TranscriptView";
+import { Card } from "../../../src/components/ui/Card";
+import { Button } from "../../../src/components/ui/Button";
 import {
   fetchPublicSessionDetail,
   fetchComments,
@@ -13,7 +16,7 @@ import {
   type PublicSessionDetail,
   type CommentItem,
   type PublicSessionListItem,
-} from "../services/api";
+} from "../../../src/services/api";
 
 function formatDuration(seconds?: number | null): string {
   if (!seconds) return "";
@@ -65,9 +68,9 @@ function CommentItemView({
   );
 }
 
-export function PublicSessionDetailPage() {
+export default function PublicSessionDetailPage() {
   const { id } = useParams<{ id: string }>();
-  const navigate = useNavigate();
+  const router = useRouter();
   const queryClient = useQueryClient();
   const [commentText, setCommentText] = useState("");
 
@@ -128,7 +131,7 @@ export function PublicSessionDetailPage() {
     return (
       <div className="page">
         <p className="text-danger">Session not found or not public.</p>
-        <Link to="/social">← Back to Social Hub</Link>
+        <Link href="/social">← Back to Social Hub</Link>
       </div>
     );
   }
@@ -138,7 +141,7 @@ export function PublicSessionDetailPage() {
 
   return (
     <div className="page">
-      <Link to="/social" className="breadcrumb-link">
+      <Link href="/social" className="breadcrumb-link">
         ← Social Hub
       </Link>
 
@@ -242,7 +245,7 @@ export function PublicSessionDetailPage() {
             />
             <div className="comment-form__actions">
               <Button
-                size="sm"
+                size="md"
                 onClick={() => {
                   if (commentText.trim()) commentMutation.mutate(commentText.trim());
                 }}
@@ -262,7 +265,7 @@ export function PublicSessionDetailPage() {
         </div>
         <Button
           onClick={() =>
-            navigate(`/session?topicTitle=${encodeURIComponent(session.topic_title)}`)
+            router.push(`/session?topicTitle=${encodeURIComponent(session.topic_title)}`)
           }
         >
           Practice This Topic →

@@ -1,10 +1,12 @@
+'use client';
+
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useRouter } from "next/navigation";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { API_BASE, DEMO_USER } from "../config";
-import { StatusChip } from "../components/ui/StatusChip";
-import { Button, LinkButton } from "../components/ui/Button";
-import { fetchSessions } from "../services/api";
+import { API_BASE, DEMO_USER } from "../../src/config";
+import { StatusChip } from "../../src/components/ui/StatusChip";
+import { Button, LinkButton } from "../../src/components/ui/Button";
+import { fetchSessions } from "../../src/services/api";
 
 type SessionListItem = {
   id: string;
@@ -45,12 +47,8 @@ function statusTone(status: string): "active" | "recovering" | "error" | "idle" 
   return "idle";
 }
 
-interface Props {
-  onSelect?: (id: string) => void;
-}
-
-export function HistoryPage({ onSelect }: Props) {
-  const navigate = useNavigate();
+export default function HistoryPage() {
+  const router = useRouter();
   const queryClient = useQueryClient();
   const [confirmingDelete, setConfirmingDelete] = useState<string | null>(null);
 
@@ -89,7 +87,7 @@ export function HistoryPage({ onSelect }: Props) {
           <p className="eyebrow">Your Sessions</p>
           <h2>History</h2>
         </div>
-        <Button onClick={() => navigate("/session")}>Start a session</Button>
+        <Button onClick={() => router.push("/session")}>Start a session</Button>
       </div>
 
       {loading && (
@@ -105,7 +103,7 @@ export function HistoryPage({ onSelect }: Props) {
           <div className="empty-illustration" aria-hidden="true" />
           <h3>No sessions yet</h3>
           <p>Start a new session to see your progress here.</p>
-          <Button onClick={() => navigate("/session")}>Start a session</Button>
+          <Button onClick={() => router.push("/session")}>Start a session</Button>
         </div>
       ) : (
         <div className="history-list" role="list">
@@ -128,21 +126,12 @@ export function HistoryPage({ onSelect }: Props) {
                 </p>
               </div>
               <div className="history-row__actions">
-                {onSelect ? (
-                  <Button variant="secondary" size="lg" onClick={() => onSelect(s.id)}>
-                    View
-                    <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
-                      <path d="M2 7h10M8 3l4 4-4 4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
-                    </svg>
-                  </Button>
-                ) : (
-                  <LinkButton to={`/sessions/${s.id}`} variant="secondary" size="lg">
-                    View
-                    <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
-                      <path d="M2 7h10M8 3l4 4-4 4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
-                    </svg>
-                  </LinkButton>
-                )}
+                <LinkButton to={`/sessions/${s.id}`} variant="secondary" size="md">
+                  View
+                  <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+                    <path d="M2 7h10M8 3l4 4-4 4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
+                  </svg>
+                </LinkButton>
                 {confirmingDelete === s.id ? (
                   <div className="delete-confirm">
                     <span className="delete-confirm__label">Delete?</span>
@@ -154,7 +143,7 @@ export function HistoryPage({ onSelect }: Props) {
                     </Button>
                   </div>
                 ) : (
-                  <Button variant="danger" size="lg" onClick={() => setConfirmingDelete(s.id)}>
+                  <Button variant="danger" size="md" onClick={() => setConfirmingDelete(s.id)}>
                     <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
                       <path d="M2 4h10M5 4V2h4v2M5.5 7v4M8.5 7v4M3 4l.7 7.3a1 1 0 0 0 1 .7h4.6a1 1 0 0 0 1-.7L11 4" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"/>
                     </svg>

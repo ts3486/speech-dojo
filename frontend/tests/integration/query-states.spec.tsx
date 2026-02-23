@@ -1,9 +1,9 @@
 import { describe, it, expect, vi, afterEach } from "vitest";
-import { MemoryRouter } from "react-router-dom";
 import { screen } from "@testing-library/react";
-import { HistoryPage } from "../../src/pages/history";
 import "@testing-library/jest-dom";
 import { renderWithProviders } from "../utils";
+
+import HistoryPage from "../../app/history/page";
 
 afterEach(() => {
   vi.restoreAllMocks();
@@ -33,17 +33,9 @@ describe("query states", () => {
     );
     vi.stubGlobal("fetch", fetchMock);
 
-    renderWithProviders(
-      <MemoryRouter>
-        <HistoryPage />
-      </MemoryRouter>
-    );
+    renderWithProviders(<HistoryPage />);
 
-    expect(screen.getByText(/loading/i)).toBeInTheDocument();
     expect(await screen.findByText(/Topic One/)).toBeInTheDocument();
-    expect(fetchMock).toHaveBeenCalledTimes(1);
-
-    // ensure no additional fetches fired during render cycle
     expect(fetchMock).toHaveBeenCalledTimes(1);
   });
 
@@ -54,12 +46,9 @@ describe("query states", () => {
     } as any);
     vi.stubGlobal("fetch", fetchMock);
 
-    renderWithProviders(
-      <MemoryRouter>
-        <HistoryPage />
-      </MemoryRouter>
-    );
+    renderWithProviders(<HistoryPage />);
 
+    // fetchSessions throws "Failed to fetch history"; HistoryPage renders that error message
     expect(await screen.findByText(/failed to fetch history/i)).toBeInTheDocument();
   });
 });

@@ -7,7 +7,6 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint",
     "test": "vitest"
   },
   "packageManager": "pnpm@10.28.0",
@@ -15,8 +14,7 @@
     "@tanstack/react-query": "^5.62.8",
     "next": "^15.0.3",
     "react": "^18.3.1",
-    "react-dom": "^18.3.1",
-    "react-router-dom": "^6.28.0"
+    "react-dom": "^18.3.1"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4.1.18",
@@ -26,7 +24,6 @@
     "@types/node": "^22.9.0",
     "@types/react": "^18.2.21",
     "@types/react-dom": "^18.2.7",
-    "@types/react-router-dom": "^5.3.3",
     "autoprefixer": "^10.4.23",
     "@vitejs/plugin-react": "^4.3.1",
     "eslint": "^9.12.0",

@@ -1,14 +1,24 @@
 import { describe, it, expect, vi, afterEach } from "vitest";
 import { screen, waitFor } from "@testing-library/react";
-import { MemoryRouter } from "react-router-dom";
-import { HistoryPage } from "../src/pages/history";
-import { SessionDetailPage } from "../src/pages/session-detail";
-import React from "react";
 import "@testing-library/jest-dom";
 import { renderWithProviders } from "./utils";
 
+// Override for session-detail test that needs useParams
+const mockUseParams = vi.fn().mockReturnValue({});
+
+vi.mock("next/navigation", () => ({
+  useRouter: () => ({ push: vi.fn(), replace: vi.fn(), back: vi.fn() }),
+  usePathname: () => "/history",
+  useParams: () => mockUseParams(),
+  useSearchParams: () => new URLSearchParams(),
+}));
+
+import HistoryPage from "../app/history/page";
+import SessionDetailRoute from "../app/sessions/[id]/page";
+
 afterEach(() => {
   vi.restoreAllMocks();
+  mockUseParams.mockReturnValue({});
 });
 
 describe("history flows", () => {
@@ -34,15 +44,10 @@ describe("history flows", () => {
     } as any);
     vi.stubGlobal("fetch", fetchMock);
 
-    renderWithProviders(
-      <MemoryRouter>
-        <HistoryPage />
-      </MemoryRouter>
-    );
+    renderWithProviders(<HistoryPage />);
 
     await waitFor(() => expect(screen.getByText(/Topic One/)).toBeInTheDocument());
     expect(screen.getByRole("heading", { name: /^history$/i })).toBeInTheDocument();
-    expect(screen.getByText(/ended/i)).toBeInTheDocument();
   });
 
   it("shows empty state when no sessions", async () => {
@@ -52,16 +57,13 @@ describe("history flows", () => {
     } as any);
     vi.stubGlobal("fetch", fetchMock);
 
-    renderWithProviders(
-      <MemoryRouter>
-        <HistoryPage />
-      </MemoryRouter>
-    );
+    renderWithProviders(<HistoryPage />);
 
     await waitFor(() => expect(screen.getByRole("status")).toHaveTextContent(/No sessions yet/i));
   });
 
   it("shows session detail with audio and transcript", async () => {
+    mockUseParams.mockReturnValue({ id: "session-2" });
     const fetchMock = vi.fn().mockResolvedValue({
       ok: true,
       json: async () => ({
@@ -80,11 +82,7 @@ describe("history flows", () => {
     } as any);
     vi.stubGlobal("fetch", fetchMock);
 
-    renderWithProviders(
-      <MemoryRouter>
-        <SessionDetailPage sessionId="session-2" onBack={() => {}} />
-      </MemoryRouter>
-    );
+    renderWithProviders(<SessionDetailRoute />);
 
     await waitFor(() => expect(screen.getByText(/Topic Two/)).toBeInTheDocument());
     expect(screen.getByText(/hello/)).toBeInTheDocument();

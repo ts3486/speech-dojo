@@ -1,5 +1,7 @@
+'use client';
+
 import { ReactNode } from "react";
-import { Link } from "react-router-dom";
+import Link from "next/link";
 
 type Variant = "primary" | "secondary" | "danger" | "ghost";
 type Size = "sm" | "md" | "lg";
@@ -23,19 +25,19 @@ interface LinkButtonProps extends BaseProps {
 
 const variantClasses: Record<Variant, string> = {
   primary:
-    "bg-gradient-to-br from-[#5C4EE0] to-[#7B6CF0] text-white border border-[#5C4EE0]/70 shadow-[0_2px_12px_rgba(92,78,224,0.32),inset_0_1px_0_rgba(255,255,255,0.18)] hover:shadow-[0_5px_22px_rgba(92,78,224,0.48)] hover:-translate-y-[1px] active:translate-y-0 active:shadow-[0_1px_4px_rgba(92,78,224,0.20)]",
+    "bg-gradient-to-br from-[#4338CA] to-[#5C4EE0] !text-white [&_svg]:!text-white border border-[#4338CA]/80 shadow-[0_2px_12px_rgba(67,56,202,0.35),inset_0_1px_0_rgba(255,255,255,0.20)] hover:shadow-[0_5px_22px_rgba(67,56,202,0.50)] hover:-translate-y-[1px] active:translate-y-0 active:shadow-[0_1px_4px_rgba(67,56,202,0.22)]",
   secondary:
-    "bg-white text-primary border border-border shadow-[0_1px_3px_rgba(0,0,0,0.06)] hover:bg-primary/5 hover:border-primary/40 hover:-translate-y-[1px]",
+    "bg-white text-primary border border-border shadow-[0_1px_3px_rgba(0,0,0,0.07)] hover:bg-primary/5 hover:border-primary/40 hover:-translate-y-[1px]",
   danger:
-    "bg-danger/10 text-danger border border-danger/30 hover:bg-danger hover:text-white hover:border-danger hover:-translate-y-[1px]",
+    "bg-[#FEF2F2] text-[#B91C1C] border border-[#FECACA] hover:bg-danger hover:!text-white hover:border-danger hover:-translate-y-[1px]",
   ghost:
-    "bg-transparent text-muted border border-transparent hover:bg-primary/5 hover:text-primary hover:-translate-y-[1px]",
+    "bg-transparent text-primary border border-primary/25 hover:bg-primary/10 hover:border-primary/40 hover:-translate-y-[1px]",
 };
 
 const sizeClasses: Record<Size, string> = {
-  sm: "px-3.5 py-1.5 text-xs gap-1.5",
-  md: "px-5 py-2.5 text-sm gap-2",
-  lg: "px-7 py-3.5 text-[15px] gap-2.5",
+  sm: "px-3.5 py-2 text-xs gap-1.5",
+  md: "px-4 py-2 text-xl gap-1.5",
+  lg: "px-5 py-2.5 text-sm gap-2",
 };
 
 const baseClasses =
@@ -72,7 +74,7 @@ export function LinkButton({
 }: LinkButtonProps) {
   return (
     <Link
-      to={disabled ? "#" : to}
+      href={disabled ? "#" : to}
       aria-disabled={disabled}
       className={`${baseClasses} ${sizeClasses[size]} ${variantClasses[variant]} ${className ?? ""}`.trim()}
     >

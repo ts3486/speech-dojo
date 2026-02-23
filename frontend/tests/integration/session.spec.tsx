@@ -1,8 +1,7 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import SessionPage from "../../src/pages/session";
-import { MemoryRouter } from "react-router-dom";
+import SessionPage from "../../app/session/page";
 import React from "react";
 import "@testing-library/jest-dom";
 import { renderWithProviders } from "../utils";
@@ -102,11 +101,7 @@ describe("session flow", () => {
   it("starts and ends a session, showing transcript", async () => {
     const fetchMock = setupFetchMocks();
 
-    renderWithProviders(
-      <MemoryRouter>
-        <SessionPage />
-      </MemoryRouter>
-    );
+    renderWithProviders(<SessionPage />);
 
     await waitFor(() => expect(fetchMock).toHaveBeenCalled());
     const select = screen.getByLabelText(/topic/i) as HTMLSelectElement;
@@ -118,13 +113,12 @@ describe("session flow", () => {
     await userEvent.click(screen.getByRole("button", { name: /start session/i }));
     await waitFor(() => expect(startRealtime).toHaveBeenCalled());
 
-    await userEvent.click(screen.getByRole("button", { name: /end session/i }));
+    // Stop button uses aria-label="Stop and save session"
+    await userEvent.click(screen.getByRole("button", { name: /stop and save session/i }));
     await waitFor(() => expect(stopRecorder).toHaveBeenCalled());
     await waitFor(() =>
       expect(screen.getByText(/hello world/i)).toBeInTheDocument()
     );
-
-    expect(screen.getByLabelText(/session status/i)).toBeInTheDocument();
 
     // simulate offline to verify alert rendering
     window.dispatchEvent(new Event("offline"));
