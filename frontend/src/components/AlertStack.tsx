@@ -19,11 +19,11 @@ interface Props {
 }
 
 const toneStyles: Record<AlertTone, { bg: string; border: string }> = {
-  network: { bg: "bg-primarySoft", border: "border-primary" },
-  mic:     { bg: "bg-primarySoft", border: "border-primary" },
-  token:   { bg: "bg-primarySoft", border: "border-primary" },
+  network: { bg: "bg-primary-soft", border: "border-primary" },
+  mic:     { bg: "bg-primary-soft", border: "border-primary" },
+  token:   { bg: "bg-primary-soft", border: "border-primary" },
   info:    { bg: "bg-[#EEF2FF]",   border: "border-[#818CF8]" },
-  error:   { bg: "bg-errorSoft",   border: "border-danger" },
+  error:   { bg: "bg-error-soft",   border: "border-danger" },
 };
 
 export function AlertStack({ alerts }: Props) {

@@ -1,10 +1,34 @@
 @import url("https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&family=Nunito:wght@400;500;600;700&display=swap");
 
-@config "../tailwind.config.cjs";
+@import "tailwindcss";
 
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@theme {
+  --color-background: #F5F3FC;
+  --color-surface: #FFFFFF;
+  --color-surface-alt: #EEEAFF;
+  --color-text: #1A1830;
+  --color-muted: #6E6A85;
+  --color-text-muted: #9895B0;
+  --color-primary: #5C4EE0;
+  --color-primary-hover: #4A3DC7;
+  --color-primary-active: #3A2DAF;
+  --color-primary-soft: #EBE9FA;
+  --color-secondary: #FF6B6B;
+  --color-secondary-soft: #FFE5E5;
+  --color-accent: #FF6B6B;
+  --color-accent-soft: #FFE5E5;
+  --color-danger: #EF4444;
+  --color-border: #D9D6EC;
+  --color-success: #22C55E;
+  --color-success-soft: #DCFCE7;
+  --color-warning: #F59E0B;
+  --color-warning-soft: #FEF3C7;
+  --color-error-soft: #FEE2E2;
+  --shadow-soft: 0 16px 40px rgba(92, 78, 224, 0.10);
+  --radius-xl: 12px;
+  --font-sans: "Nunito", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-heading: "Bricolage Grotesque", "Nunito", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
 
 /* ─── Theme tokens ─────────────────────────────────────────────────────────── */
 :root {

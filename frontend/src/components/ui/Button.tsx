@@ -35,9 +35,9 @@ const variantClasses: Record<Variant, string> = {
 };
 
 const sizeClasses: Record<Size, string> = {
-  sm: "px-3.5 py-2 text-xs gap-1.5",
-  md: "px-4 py-2 text-xl gap-1.5",
-  lg: "px-5 py-2.5 text-sm gap-2",
+  sm: "px-3.5 py-1.5 text-xs gap-1.5",
+  md: "px-4 py-2 text-sm gap-1.5",
+  lg: "px-6 py-3 text-base gap-2",
 };
 
 const baseClasses =
